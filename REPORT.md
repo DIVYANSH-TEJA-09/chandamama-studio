@@ -1,4 +1,4 @@
-# Research Report: Chandamama Story Weaver 2.0
+# Research Report: Chandamama Studio
 
 ## 1. Project Objective
 The goal was to modernize the access and creativity around the **Chandamama** magazine archive (1947–2012), a cultural treasure of Telugu children's literature. 
