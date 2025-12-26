@@ -1,0 +1,23 @@
+# Environment Variables
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak
+venv.bak
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Data & Stats (Keep structure, ignore large files if needed, but keeping stats for now)
+# stats/
+# qdrant_db/ # This is large, usually ignored in git, but depends on user preference. 
+# For now, ignoring DB to be safe as it's large binary data.
+qdrant_db/
+
+# OS
+.DS_Store
+Thumbs.db
