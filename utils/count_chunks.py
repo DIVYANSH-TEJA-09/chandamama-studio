@@ -2,7 +2,7 @@
 import os
 import json
 
-CHUNKS_DIR = r"d:/Viswam_Projects/Chandamama_2.0/chunks"
+CHUNKS_DIR = r"d:/Viswam_Projects/chandamama-studio/chunks"
 
 def count_chunks():
     total_chunks = 0

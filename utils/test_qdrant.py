@@ -4,7 +4,7 @@ from qdrant_client import QdrantClient
 from sentence_transformers import SentenceTransformer
 
 # Configuration
-QDRANT_PATH = r"d:/Viswam_Projects/Chandamama_2.0/qdrant_db"
+QDRANT_PATH = r"d:/Viswam_Projects/chandamama-studio/qdrant_db"
 COLLECTION_NAME = "chandamama_chunks"
 MODEL_NAME = "intfloat/multilingual-e5-base"
 

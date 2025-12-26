@@ -15,7 +15,7 @@ if __name__ == "__main__":
     print("========================================")
     print("   Starting Chandamama DB Rebuild       ")
     print("========================================")
-    print("This script will re-index all chunks from 'd:/Viswam_Projects/Chandamama_2.0/chunks' into Qdrant.")
+    print("This script will re-index all chunks from 'd:/Viswam_Projects/chandamama-studio/chunks' into Qdrant.")
     print("This may take 10-20 minutes depending on CPU.")
     print("----------------------------------------")
     

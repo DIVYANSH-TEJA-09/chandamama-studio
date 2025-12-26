@@ -20,7 +20,7 @@ from sentence_transformers import SentenceTransformer
 # Configuration
 STATS_PATH = "stats/global_stats.json"
 POEM_STATS_PATH = "stats/poem_stats.json"
-QDRANT_PATH = "d:/Viswam_Projects/Chandamama_2.0/qdrant_db"
+QDRANT_PATH = "d:/Viswam_Projects/chandamama-studio/qdrant_db"
 COLLECTION_NAME = "chandamama_chunks"
 MODEL_NAME = "intfloat/multilingual-e5-base"
 

@@ -4,9 +4,9 @@ import sys
 
 print("Start...", flush=True)
 
-BASE_DIR = r"d:/Viswam_Projects/Chandamama_2.0/1947-2012"
-OUTPUT_DIR = r"d:/Viswam_Projects/Chandamama_2.0/chunks"
-TEST_FILE = r"d:/Viswam_Projects/Chandamama_2.0/1947-2012/1957/చందమామ_1957_02.json"
+BASE_DIR = r"d:/Viswam_Projects/chandamama-studio/1947-2012"
+OUTPUT_DIR = r"d:/Viswam_Projects/chandamama-studio/chunks"
+TEST_FILE = r"d:/Viswam_Projects/chandamama-studio/1947-2012/1957/చందమామ_1957_02.json"
 
 TARGET_MIN = 300
 TARGET_MAX = 500

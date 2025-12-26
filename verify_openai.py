@@ -12,7 +12,7 @@ if api_key == "placeholder_please_replace":
     print("WARNING: OPENAI_API_KEY is still the placeholder!")
 
 # Add src to path
-sys.path.append("d:/Viswam_Projects/Chandamama_2.0/src")
+sys.path.append("d:/Viswam_Projects/chandamama-studio/src")
 
 try:
     from story_gen import generate_story
