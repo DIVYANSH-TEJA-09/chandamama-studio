@@ -1,6 +1,10 @@
 MIT License
 
+<<<<<<< HEAD
 Copyright (c) 2025 Viswam Projects
+=======
+Copyright (c) 2025 DIVYANSH-TEJA-09
+>>>>>>> a18c335ad4a78dd8c8504d70bc39b6c1b24714f9
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,6 +23,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+<<<<<<< HEAD
 
 ---
 
@@ -26,3 +31,5 @@ SOFTWARE.
 This repository contains code intended to process and analyze the "Chandamama" magazine archive. 
 The actual stories, poems, and images (Data) processed by this software belong to their respective copyright holders (Chandamama India Ltd. / Geodesic). 
 This tool is for educational and research purposes only.
+=======
+>>>>>>> a18c335ad4a78dd8c8504d70bc39b6c1b24714f9
