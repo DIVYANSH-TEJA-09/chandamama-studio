@@ -26,7 +26,7 @@ MODEL_NAME = "intfloat/multilingual-e5-base"
 
 # Page Config
 st.set_page_config(
-    page_title="Chandamama AI Studio",
+    page_title="Chandamama Studio",
     page_icon="🌙",
     layout="wide"
 )
@@ -84,7 +84,7 @@ def get_keys(stats_dict, key_name):
 
 # Sidebar Navigation
 with st.sidebar:
-    st.title("🌙 AI Studio")
+    st.title("🌙 Chandamama Studio")
     app_mode = st.radio("Choose Mode", ["Story Weaver", "Poem Weaver"])
     
     st.divider()

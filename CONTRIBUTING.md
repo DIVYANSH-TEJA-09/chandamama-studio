@@ -1,4 +1,4 @@
-# Contributing to Chandamama Story Weaver
+# Contributing to Chandamama Studio
 
 Welcome to the team! This guide will help you set up your environment and work effectively on the project.
 

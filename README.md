@@ -1,4 +1,4 @@
-# Chandamama Story Weaver (AI) 🌙
+# Chandamama Studio 🌙
 
 An AI-powered application to explore, search, and "weave" new stories inspired by the legendary *Chandamama* magazine archive (1947-2012).
 
