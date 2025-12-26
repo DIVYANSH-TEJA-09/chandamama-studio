@@ -9,7 +9,7 @@ Since we don't commit the heavy Database (`qdrant_db/`) to Git, you need to buil
 1.  **Clone the Repo**:
     ```bash
     git clone <repo-url>
-    cd Chandamama_2.0
+    cd chandamama-studio
     ```
 
 2.  **Install Dependencies**:
