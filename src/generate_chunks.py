@@ -4,12 +4,8 @@ import sys
 
 print("Start...", flush=True)
 
-# Dynamic project root
-script_dir = os.path.dirname(os.path.abspath(__file__))
-PROJECT_ROOT = os.path.dirname(script_dir)
-
-BASE_DIR = os.path.join(PROJECT_ROOT, "1947-2012")
-OUTPUT_DIR = os.path.join(PROJECT_ROOT, "chunks")
+BASE_DIR = os.path.join(os.getcwd(), "1947-2012")
+OUTPUT_DIR = os.path.join(os.getcwd(), "chunks")
 TEST_FILE = os.path.join(BASE_DIR, "1957", "చందమామ_1957_02.json")
 
 TARGET_MIN = 300

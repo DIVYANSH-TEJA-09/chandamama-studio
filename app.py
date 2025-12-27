@@ -35,6 +35,8 @@ st.set_page_config(
 @st.cache_resource
 def load_resources():
     client = QdrantClient(path=QDRANT_PATH)
+    if not client.collection_exists(COLLECTION_NAME):
+        raise ValueError(f"Collection '{COLLECTION_NAME}' not found at {QDRANT_PATH}. Please run rebuild_db.py.")
     model = SentenceTransformer(MODEL_NAME)
     return client, model
 
