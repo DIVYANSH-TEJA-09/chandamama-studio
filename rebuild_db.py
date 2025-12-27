@@ -7,8 +7,10 @@ sys.path.append(os.path.join(os.getcwd(), 'src'))
 
 try:
     from src.populate_qdrant import main
-except ImportError:
-    print("Error: Could not find 'src/populate_qdrant.py'. Make sure you are in the root directory.")
+except ImportError as e:
+    print(f"Error: Failed to import 'src/populate_qdrant.py'.")
+    print(f"Details: {e}")
+    print("Ensure you are in the root directory and all dependencies are installed.")
     sys.exit(1)
 
 if __name__ == "__main__":
