@@ -9,7 +9,9 @@ from qdrant_client.http import models
 from sentence_transformers import SentenceTransformer
 
 # Configuration
-PROJECT_ROOT = os.getcwd()
+# dynamic project root based on this file's location (src/populate_qdrant.py -> parent -> PROJECT_ROOT)
+script_dir = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(script_dir)
 CHUNKS_DIR = os.path.join(PROJECT_ROOT, "chunks")
 QDRANT_PATH = os.path.join(PROJECT_ROOT, "qdrant_db")
 COLLECTION_NAME = "chandamama_chunks"
