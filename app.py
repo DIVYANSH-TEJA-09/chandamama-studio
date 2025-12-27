@@ -20,7 +20,7 @@ from sentence_transformers import SentenceTransformer
 # Configuration
 STATS_PATH = "stats/global_stats.json"
 POEM_STATS_PATH = "stats/poem_stats.json"
-QDRANT_PATH = "d:/Viswam_Projects/chandamama-studio/qdrant_db"
+QDRANT_PATH = os.path.join(os.getcwd(), "qdrant_db")
 COLLECTION_NAME = "chandamama_chunks"
 MODEL_NAME = "intfloat/multilingual-e5-base"
 
@@ -35,6 +35,8 @@ st.set_page_config(
 @st.cache_resource
 def load_resources():
     client = QdrantClient(path=QDRANT_PATH)
+    if not client.collection_exists(COLLECTION_NAME):
+        raise ValueError(f"Collection '{COLLECTION_NAME}' not found at {QDRANT_PATH}. Please run rebuild_db.py.")
     model = SentenceTransformer(MODEL_NAME)
     return client, model
 

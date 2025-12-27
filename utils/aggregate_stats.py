@@ -4,7 +4,7 @@ import glob
 from collections import Counter
 from pathlib import Path
 
-def aggregate_stats(base_dir="d:/Viswam_Projects/chandamama-studio/1947-2012", global_stats_path="stats/global_stats.json"):
+def aggregate_stats(base_dir=os.path.join(os.getcwd(), "1947-2012"), global_stats_path="stats/global_stats.json"):
     print(f"Scanning {base_dir}...")
     
     character_counts = Counter()

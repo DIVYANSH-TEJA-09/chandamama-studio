@@ -2,7 +2,7 @@ import os
 import json
 import collections
 
-BASE_DIR = "d:/Viswam_Projects/chandamama-studio/1947-2012"
+BASE_DIR = os.path.join(os.getcwd(), "1947-2012")
 OUTPUT_FILE = "stats/normalized_stats.json"
 
 def main():

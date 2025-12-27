@@ -6,32 +6,49 @@ Welcome to the team! This guide will help you set up your environment and work e
 
 Since we don't commit the heavy Database (`qdrant_db/`) to Git, you need to build it locally.
 
-1.  **Clone the Repo**:
-    ```bash
-    git clone <repo-url>
-    cd chandamama-studio
-    ```
+### 1. Clone the Repo
+```bash
+git clone <repo-url>
+cd chandamama-studio
+```
 
-2.  **Install Dependencies**:
-    ```bash
-    pip install -r requirements.txt
-    ```
+### 2. Set Up Virtual Environment (Recommended)
 
-3.  **Setup Environment**:
-    - Copy `.env.template` to `.env`
-    - Add your `OPENAI_API_KEY` (Ask lead dev if you don't have one).
+**macOS / Linux:**
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
 
-4.  **⚡ Build the Database**:
-    Run this script to index the chandamama chunks locally.
-    ```bash
-    python rebuild_db.py
-    ```
-    *Wait ~10 mins for it to finish.*
+**Windows:**
+```powershell
+python -m venv venv
+.\venv\Scripts\activate
+```
 
-5.  **Run the App**:
-    ```bash
-    streamlit run app.py
-    ```
+### 3. Install Dependencies
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Configure Environment
+1.  **Copy the template:**
+    - **macOS / Linux:** `cp .env.template .env`
+    - **Windows:** `copy .env.template .env`
+2.  **Add your API Key:**
+    - Open `.env` and paste your `OPENAI_API_KEY`.
+
+### 5. ⚡ Build the Database
+Run this script to index the chandamama chunks locally.
+```bash
+python rebuild_db.py
+```
+*Wait ~10 mins for it to finish.*
+
+### 6. Run the App
+```bash
+streamlit run app.py
+```
 
 ---
 
