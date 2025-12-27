@@ -4,9 +4,13 @@ import sys
 
 print("Start...", flush=True)
 
-BASE_DIR = r"d:/Viswam_Projects/chandamama-studio/1947-2012"
-OUTPUT_DIR = r"d:/Viswam_Projects/chandamama-studio/chunks"
-TEST_FILE = r"d:/Viswam_Projects/chandamama-studio/1947-2012/1957/చందమామ_1957_02.json"
+# Dynamic project root
+script_dir = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(script_dir)
+
+BASE_DIR = os.path.join(PROJECT_ROOT, "1947-2012")
+OUTPUT_DIR = os.path.join(PROJECT_ROOT, "chunks")
+TEST_FILE = os.path.join(BASE_DIR, "1957", "చందమామ_1957_02.json")
 
 TARGET_MIN = 300
 TARGET_MAX = 500
