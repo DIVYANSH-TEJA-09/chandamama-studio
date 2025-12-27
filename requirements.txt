@@ -5,3 +5,4 @@ sentence-transformers>=2.5.1
 python-dotenv>=1.0.1
 tqdm>=4.66.0
 numpy
+transformers>=4.42.0
