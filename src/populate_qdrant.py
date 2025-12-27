@@ -9,8 +9,9 @@ from qdrant_client.http import models
 from sentence_transformers import SentenceTransformer
 
 # Configuration
-CHUNKS_DIR = r"d:/Viswam_Projects/chandamama-studio/chunks"
-QDRANT_PATH = r"d:/Viswam_Projects/chandamama-studio/qdrant_db"
+# Configuration
+CHUNKS_DIR = os.getenv("CHUNKS_DIR", "chunks")
+QDRANT_PATH = os.getenv("QDRANT_PATH", "qdrant_db")
 COLLECTION_NAME = "chandamama_chunks"
 MODEL_NAME = "intfloat/multilingual-e5-base"
 VECTOR_SIZE = 768
