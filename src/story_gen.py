@@ -36,7 +36,7 @@ IMPORTANT:
 - Gods must remain gods; humans must remain humans.
 - Use traditional Indian moral-logic.
 -Do not introduce characters, events, or relationships that contradict the provided archive context
-
+- Title must be creative and not just putting keywords together.
 Goal:
 Write a NEW Telugu story inspired by the context and parameters.
 

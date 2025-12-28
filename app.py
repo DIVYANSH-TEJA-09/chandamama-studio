@@ -138,7 +138,7 @@ if app_mode == "Story Weaver":
                 with st.spinner("Searching Archive & Writing..."):
                     # RAG
                     search_q = f"{prompt_input} {sel_genre} {' '.join(sel_keywords)} {' '.join(sel_chars)}"
-                    rag_results = perform_rag_search(search_q, limit=3)
+                    rag_results = perform_rag_search(search_q, limit=7)
                     
                     context_chunks = []
                     for p in rag_results:
