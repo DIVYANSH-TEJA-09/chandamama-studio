@@ -29,6 +29,8 @@ def main(dry_run=False):
     # Initialize skipped log
     skipped_log.init_log()
     
+    samples_printed = 0
+    
     for file_path in tqdm(files, desc="Processing Files"):
         try:
             # 2. Load chunks
@@ -58,11 +60,14 @@ def main(dry_run=False):
             else:
                 stories_to_embed = stories
                 # For dry run just show the first few
-                if total_processed < 5:
-                    for s in stories[:1]:
+                if samples_printed < 5:
+                    for s in stories:
+                        if samples_printed >= 5:
+                            break
                         print(f"\n[Dry Run] Sample extracted story: {s.story_id}")
                         print(f"Metadata keys: {list(s.metadata.keys())}")
-                        print(f"Text length: {len(s.text)} partitions")
+                        print(f"Text length: {len(s.text)} chars")
+                        samples_printed += 1
             
             # 5. Embed and Store
             if not dry_run and stories_to_embed:
