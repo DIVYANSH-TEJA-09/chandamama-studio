@@ -53,5 +53,32 @@ The goal was to modernize the access and creativity around the **Chandamama** ma
 - **Interactive Puzzles:** Identified 54 "Quiz" items in the archive. Recommended processing these into a "Daily Riddle" game.
 - **Visuals:** Future integration of diffusion models to generate Chandamama-style line art for the stories.
 
-## 6. Conclusion
-Chandamama Story Weaver 2.0 successfully bridges the gap between static archives and dynamic AI generation. By tightly coupling RAG with a structured metadata taxonomy, we achieved a system that respects the source material's cultural integrity while enabling infinite new creativity.
+
+## Phase 4: Retrieval Strategy Experimentation (Current)
+
+### Objective
+To identify the optimal retrieval strategy for high-coherence story generation by comparing "Contextual Chunks" vs. "Full Story Hydration".
+
+### Methodologies Tested
+#### 1. Contextual Chunks (`ContextualRetriever`)
+- **Logic**: Fetches the Top K chunks and mathematically calculates/retrieves their immediate neighbors (Previous/Next) from the Qdrant store.
+- **Goal**: Provide immediate narrative flow without checking the whole story.
+
+#### 2. Full Story Hydration (`FullStoryRetriever`)
+- **Logic**: Identifies relevant stories via semantic search, then fetches *all* chunks for those story IDs to reconstruct the complete text.
+- **Goal**: Maximize narrative coherence and moral alignment.
+
+### Tooling
+- **Comparator App**: A Streamlit tool (`streamlit_comparison.py`) with split-screen UI to test identical prompts against both strategies side-by-side.
+- **Faceted UI**: Mirrors the main application's input structure (Genre, Keywords) for valid A/B testing.
+
+---
+
+### Phase 5: Story-Level Embedding Pipeline (New)
+- **Objective:** Enable high-level style imitation by creating a dedicated vector space for *full* stories (as semantic units) rather than fragmented chunks.
+- **Implementation:**
+    - **Modular Pipeline:** Created `src/story_embedder` with clear separation of concerns (Loader, Processor, Embedder, Storage).
+    - **Idempotency:** Pipeline checks existence of story IDs before processing to allow safe restarts.
+    - **Separate Storage:** Uses a dedicated Qdrant collection `chandamama_stories` to avoid polluting the Q&A chunk index.
+    - **Constraint Handling:** Automatically logs stories exceeding the 512-token limit of `multilingual-e5-base` to `logs/skipped_stories.csv` for auditability.
+    - **Metadata Preservation:** Reconstructs full metadata from chunks and stores it alongside the story vector, ensuring no data loss.
