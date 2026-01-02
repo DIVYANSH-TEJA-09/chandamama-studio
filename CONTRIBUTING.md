@@ -50,6 +50,18 @@ python rebuild_db.py
 streamlit run app.py
 ```
 
+### 7. 📖 Story-Level Embedding Pipeline (Optional)
+If you need to generate story-level embeddings for style imitation:
+1.  **Dry Run (Test):**
+    ```bash
+    python -m src.story_embedder.main --dry-run
+    ```
+2.  **Live Run:**
+    ```bash
+    python -m src.story_embedder.main
+    ```
+> **Note:** This process might take 20-30 minutes. It logs skipped stories to `logs/skipped_stories.csv`.
+
 ---
 
 ## 🛠 Workflow
