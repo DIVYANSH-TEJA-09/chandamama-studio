@@ -22,11 +22,10 @@ COLLECTION_NAME = "chandamama_stories"
 VECTOR_SIZE = 768
 
 # Model Settings
-# Using the same model as populate_qdrant.py to match ecosystem, though new models exist.
-# User requested "Use a single multilingual embedding model consistently."
-MODEL_NAME = "intfloat/multilingual-e5-base"
-# e5-base has a limit of 512 tokens. Stories longer than this will be skipped.
-MAX_TOKEN_LIMIT = 512 
+# process: Switched to GTE-Multilingual-Base to support long context (8192 tokens)
+# e5-base length (512) was skipping too many full stories.
+MODEL_NAME = "Alibaba-NLP/gte-multilingual-base"
+MAX_TOKEN_LIMIT = 8192 
 
 # Processing Settings
 BATCH_SIZE = 32  # Batch size for embedding generation

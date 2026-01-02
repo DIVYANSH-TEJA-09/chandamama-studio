@@ -8,7 +8,8 @@ from . import skipped_log
 class StoryEmbedder:
     def __init__(self):
         print(f"Loading embedding model '{config.MODEL_NAME}'...")
-        self.model = SentenceTransformer(config.MODEL_NAME)
+        # trust_remote_code=True is required for GTE models
+        self.model = SentenceTransformer(config.MODEL_NAME, trust_remote_code=True)
         # We can use the model's tokenizer to count tokens accurately
         self.tokenizer = self.model.tokenizer
 
