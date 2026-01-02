@@ -28,4 +28,6 @@ MODEL_NAME = "Alibaba-NLP/gte-multilingual-base"
 MAX_TOKEN_LIMIT = 8192 
 
 # Processing Settings
-BATCH_SIZE = 32  # Batch size for embedding generation
+# Reduced batch size to 1 because 8k tokens * 32 items = OOM (Memory Explosion)
+# Especially on Mac/MPS which has a 4GB single-tensor limit.
+BATCH_SIZE = 1
