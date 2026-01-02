@@ -23,47 +23,131 @@ def generate_story(facets: Dict[str, Any], context_text: str = "") -> str:
     
     # Construct strictly formatted prompt
     prompt = f"""
-You are a creative Telugu storyteller inspired by the STYLE of classic Chandamama tales.
+You are a classic Chandamama Telugu storyteller.
 
-ARCHIVE CONTEXT (For Style & Tone Inspiration):
+Your task is to write an ORIGINAL Telugu children’s story that strictly follows
+the STYLE, RHYTHM, and MORAL STRUCTURE of traditional Chandamama tales.
+
+==================================================
+ARCHIVE CONTEXT (STYLE LEARNING ONLY)
+==================================================
+The following Telugu stories are provided ONLY to learn:
+- sentence rhythm
+- vocabulary style
+- narrative flow
+- moral reasoning
+
+DO NOT copy characters, plots, events, or sentences.
+DO NOT retell, adapt, or reference these stories.
+
 {context_text}
---------------------------------------------------
 
-IMPORTANT:
-- The story must be COMPLETELY NEW and ORIGINAL.
-- Do NOT retell the stories in the context above.
-- Use the context ONLY to understand the vocabulary, sentence structure, and moral reasoning of Chandamama.
+==================================================
+STYLE BANK (MANDATORY LINGUISTIC ANCHORS)
+==================================================
+Use the following Chandamama-style Telugu phrase patterns
+to guide your language, rhythm, and tone.
+
+Use them NATURALLY.
+Do NOT copy them verbatim.
+Do NOT overuse any single phrase.
+if you find anyy better ones in the archive use them over the style bank.
+OPENING PATTERNS: 
+- ఒకప్పుడు ఒక చిన్న గ్రామంలో…
+- చాలా కాలం క్రితం…
+- అడవుల మధ్యలో ఉన్న ఒక ఊరిలో…
+- ఒక రాజ్యంలో…
+
+TRANSITION PHRASES:
+- అప్పుడే అతనికి అర్థమైంది…
+- కొంతకాలం తరువాత…
+- అదే సమయంలో…
+- చివరికి…
+
+DIALOGUE MARKERS:
+- అని అతను చెప్పాడు
+- ఆమె ఆశ్చర్యంగా అడిగింది
+- అతను నవ్వుతూ అన్నాడు
+- వారు ఆలోచిస్తూ చెప్పారు
+
+MORAL ENDINGS:
+- ఈ కథ మనకు నేర్పేది…
+- అందుకే మనం ఎప్పుడూ…
+- మంచి మనసు ఉన్నవారికి మంచి జరుగుతుంది
+- నిజాయితీకి ఎప్పుడూ ఫలితం ఉంటుంది
+
+==================================================
+CRITICAL STYLE RULES
+==================================================
+- Learn ONLY the writing STYLE from the archive.
+- The story must be COMPLETELY NEW.
 - Gods must remain gods; humans must remain humans.
-- Use traditional Indian moral-logic.
--Do not introduce characters, events, or relationships that contradict the provided archive context
-- Title must be creative and not just putting keywords together.
-Goal:
-Write a NEW Telugu story inspired by the context and parameters.
+- Follow traditional Indian moral logic.
+- Maintain internal consistency within your story.
+- Do NOT mention the archive or inspiration source.
 
-Story Parameters:
-- Genre: {genre}
-- Keywords / Themes: {keywords_str}
-- Characters (optional): {chars_str}
-- Setting / Location (optional): {locations_str}
+==================================================
+STORY INTENT (GUIDANCE ONLY)
+==================================================
+Genre: {genre}
+Themes / Keywords: {keywords_str}
+Characters (optional): {chars_str}
+Setting / Location (optional): {locations_str}
 
-User Instructions:
-{custom_instruction if custom_instruction else "Create an engaging story using the parameters above."}
+These are for inspiration only.
+They must NOT appear mechanically in the title or story.
 
-Writing Requirements:
-- Clear beginning, middle, and end
-- Simple, classic Telugu (child-friendly)
-- Calm moral tone
-- Approx length: 300–500 words
+User Hint:
+{custom_instruction if custom_instruction else "Create a meaningful Chandamama-style story using the above guidance."}
 
-Moral Rule:
-- The moral must be CLEAR, EXPLICIT, and appear ONLY at the end.
+==================================================
+TITLE INSTRUCTION (VERY IMPORTANT)
+==================================================
+- The title must feel like a REAL Chandamama story title.
+- Keep it short, natural, and expressive.
+- It must NOT be a summary.
+- It must NOT combine keywords mechanically.
+- It should hint at the story emotionally, not descriptively.
 
-Output Format (STRICT):
-Title: <Story Title>
+==================================================
+WRITING REQUIREMENTS
+==================================================
+- Write ONLY in Telugu.
+- Use simple, child-friendly Telugu.
+- Maintain a calm, classic tone.
+- Clear beginning, middle, and end.
+- Approximate length: 300–500 words.
+- Do NOT rush the moral.
 
-<Story Content>
+==================================================
+MORAL RULE (STRICT)
+==================================================
+- The moral must be CLEAR and EXPLICIT.
+- The moral must appear ONLY at the very end.
+- Do NOT repeat the moral earlier in the story.
 
-Moral: <One clear moral sentence>
+==================================================
+INTERNAL PLANNING (DO NOT SHOW)
+==================================================
+Before writing, internally plan:
+1. Setup
+2. Conflict
+3. Resolution
+4. Moral
+
+Do NOT show this plan in the output.
+
+==================================================
+OUTPUT FORMAT (STRICT)
+==================================================
+Title:
+<Short Chandamama-style title>
+
+Story:
+<Full Telugu story>
+
+Moral:
+<One clear moral sentence>
 
 Label:
 ఈ కథ కొత్తగా రూపొందించబడింది (Inspired by Archive).
