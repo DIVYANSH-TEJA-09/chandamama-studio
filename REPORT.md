@@ -80,7 +80,7 @@ To identify the optimal retrieval strategy for high-coherence story generation b
     - **Modular Pipeline:** Created `src/story_embedder` with clear separation of concerns (Loader, Processor, Embedder, Storage).
     - **Idempotency:** Pipeline checks existence of story IDs before processing to allow safe restarts.
     - **Separate Storage:** Uses a dedicated Qdrant collection `chandamama_stories` to avoid polluting the Q&A chunk index.
-    - **Constraint Handling:** Automatically logs stories exceeding the 512-token limit of `multilingual-e5-base` to `logs/skipped_stories.csv` for auditability.
+    - **Constraint Handling:** Automatically logs stories exceeding the 8192-token limit of `gte-multilingual-base` to `logs/skipped_stories.csv`.
     - **Metadata Preservation:** Reconstructs full metadata from chunks and stores it alongside the story vector, ensuring no data loss.
 
 ### Phase 6: Skipped Story Recovery
