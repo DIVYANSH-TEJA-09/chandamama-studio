@@ -26,6 +26,7 @@ from retrieval_logics_test.contextual_retrieval import ContextualRetriever
 from retrieval_logics_test.full_story_retrieval import FullStoryRetriever
 from retrieval_logics_test.simple_retrieval import SimpleRetriever
 from retrieval_logics_test.hybrid_retrieval import HybridRetriever
+from retrieval_logics_test.story_embeddings_retrieval import StoryEmbeddingsRetriever
 from retrieval_logics_test.local_gen_utils import generate_hybrid_story
 from story_gen import generate_story
 
@@ -55,7 +56,7 @@ global_stats = load_stats(STATS_PATH)
 # Page Config
 st.set_page_config(layout="wide", page_title="RAG Strategy 4-Way Comparator")
 
-st.title("🏹 RAG Retrieval Strategy Comparator (4-Way)")
+st.title("🏹 RAG Retrieval Strategy Comparator (5-Way)")
 st.markdown("Compare 4 distinct logic paths for story generation side-by-side.")
 
 # Initialize Retrievers (Cached)
@@ -66,14 +67,15 @@ def get_retrievers():
         r2 = FullStoryRetriever(top_k=3)
         r3 = SimpleRetriever(top_k=7)
         r4 = HybridRetriever(content_top_k=3)
-        return r1, r2, r3, r4
+        r5 = StoryEmbeddingsRetriever(top_k=3)
+        return r1, r2, r3, r4, r5
     except Exception as e:
         st.error(f"Failed to initialize retrievers: {e}")
-        return None, None, None, None
+        return None, None, None, None, None
 
-retriever1, retriever2, retriever3, retriever4 = get_retrievers()
+retriever1, retriever2, retriever3, retriever4, retriever5 = get_retrievers()
 
-if not all([retriever1, retriever2, retriever3, retriever4]):
+if not all([retriever1, retriever2, retriever3, retriever4, retriever5]):
     st.stop()
 
 # --- Faceted Inputs ---
@@ -108,8 +110,8 @@ with st.form("query_form"):
     submitted = st.form_submit_button("Generate & Compare All 4")
 
 if submitted:
-    # 4 Columns
-    col1, col2, col3, col4 = st.columns(4)
+    # 5 Columns
+    col1, col2, col3, col4, col5 = st.columns(5)
     
     # Prepare Facets
     facets = {
@@ -179,3 +181,15 @@ if submitted:
                 content_context=hybrid_ctx['content']
             )
             st.markdown(story4)
+
+    # --- Strategy 5: Story Embeddings ---
+    with col5:
+        st.header("5. Story Embeddings")
+        st.caption("Vector Search on Full Stories")
+        
+        with st.spinner("Gen 5..."):
+            context5 = retriever5.retrieve(search_query)
+            with st.expander("Ctx 5"):
+                st.text(context5[:1000] + "..." if len(context5) > 1000 else context5)
+            story5 = generate_story(facets, context_text=context5)
+            st.markdown(story5)
