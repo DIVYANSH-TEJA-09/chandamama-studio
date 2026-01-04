@@ -82,3 +82,18 @@ To identify the optimal retrieval strategy for high-coherence story generation b
     - **Separate Storage:** Uses a dedicated Qdrant collection `chandamama_stories` to avoid polluting the Q&A chunk index.
     - **Constraint Handling:** Automatically logs stories exceeding the 512-token limit of `multilingual-e5-base` to `logs/skipped_stories.csv` for auditability.
     - **Metadata Preservation:** Reconstructs full metadata from chunks and stores it alongside the story vector, ensuring no data loss.
+
+### Phase 6: Skipped Story Recovery
+- **Issue:** Approximately 2,500 stories were skipped during the initial embedding process because they exceeded the 512-token limit of the `multilingual-e5-base` model.
+- **Resolution:**
+    - **Model Upgrade:** Updated `src/story_embedder/config.py` to use `Alibaba-NLP/gte-multilingual-base`, which supports a context length of **8192 tokens**.
+    - **Targeted Retry:** Developed `src/story_embedder/retry_skipped.py` to read the failure log (`logs/skipped_stories.csv`) and selectively process only the skipped items.
+    - **Outcome:** Successfully re-embedded long-form stories (1000-4000 tokens) into the Qdrant database without needing to re-process the entire archive, ensuring 100% data coverage.
+
+### Phase 7: Enhanced Retrieval Comparison
+- **Objective:** Evaluate the effectiveness of the new **Full Story Embeddings** against existing chunk-based strategies.
+- **Action:**
+    - Updated `src/retrieval_logics_test/streamlit_comparison.py` to support a **5-Way Comparison**.
+    - Implemented a new retriever `src/retrieval_logics_test/story_embeddings_retrieval.py` that utilizes the `chandamama_stories` collection and `gte-multilingual-base` model.
+    - Added a 5th column to the UI ("5. Story Embeddings") to visualize results from full-story vector search side-by-side with chunk-based methods.
+- **Goal:** Determine if retrieving whole stories by vector similarity yields better narrative priming than reconstructing stories from chunks.
