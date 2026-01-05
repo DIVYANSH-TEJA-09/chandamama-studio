@@ -37,7 +37,7 @@ The goal was to modernize the access and creativity around the **Chandamama** ma
 
 ## 3. Technical Architecture
 - **Frontend**: Streamlit (Python)
-- **Backend/Logic**: Qwen-72B (via Hugging Face API)
+- **Backend/Logic**: Qwen-2.5-7B-Instruct (via Hugging Face API)
 - **Database**: Qdrant (Local Vector DB)
 - **Embeddings**: `intfloat/multilingual-e5-base`
 - **Data Pipeline**: Custom Python scripts for scrubbing and aggregation.
@@ -98,10 +98,14 @@ To identify the optimal retrieval strategy for high-coherence story generation b
     - Added a 5th column to the UI ("5. Story Embeddings") to visualize results from full-story vector search side-by-side with chunk-based methods.
 - **Goal:** Determine if retrieving whole stories by vector similarity yields better narrative priming than reconstructing stories from chunks.
 
-### Phase 8: Migration to Hugging Face API (Qwen-72B)
-- **Problem:** The initial reliance on OpenAI was costly/restricted OR local hardware constraints made running large models (Qwen-72B) impossible.
+### Phase 8: Migration to Hugging Face API (Qwen 2.5)
+- **Problem:**
+    - Initial reliance on OpenAI was costly.
+    - Local deployment of large models (Qwen-72B) was impossible due to hardware constraints.
+    - **Update:** The free tier of Hugging Face Inference API has rate limits for the 72B model ("Novita" provider).
 - **Solution:**
-    - Refactored the entire backend (`src/story_gen.py`, `src/rag.py`, `app.py`) to decouple the LLM provider.
-    - Implemented `src/local_llm.py` as a unified interface using `huggingface_hub.InferenceClient`.
-    - Switched to the **Qwen-72B** model via the **Hugging Face Inference API**, enabling state-of-the-art performance without local GPU requirements.
-    - Updated dependencies to remove heavy local ML libraries (`torch`, `accelerate`) in favor of lightweight API clients.
+    - **Unified Interface:** Implemented `src/local_llm.py` using `huggingface_hub.InferenceClient` to decouple the LLM provider from the application logic.
+    - **Model Selection:** Switched to **Qwen/Qwen2.5-7B-Instruct**. This model balances high-quality Telugu generation with the availability requirements of the Hugging Face Free Tier.
+    - **Efficiency:** Added `frequency_penalty` and boosted `max_tokens` to 3500 to ensure completely generated stories without loops or cut-offs.
+    - **Interactive Comparison:** Enhanced `streamlit_comparison.py` with dynamic checkboxes, allowing users to selectively run specific retrieval strategies (1-5) to save time and tokens.
+    - **Cleanup:** Completely removed all `openai`, `torch`, and `accelerate` dependencies, resulting in a lightweight, pure-API codebase.
