@@ -90,11 +90,9 @@ with st.sidebar:
     app_mode = st.radio("Choose Mode", ["Story Weaver", "Poem Weaver"])
     
     st.divider()
+    st.divider()
     st.header("Status")
-    if os.getenv("OPENAI_API_KEY"):
-        st.success("AI Model: Active ✅")
-    else:
-        st.error("AI Model: Missing Key ❌")
+    st.success("Qwen-72B (HF API): Ready ✅")
         
     st.divider()
     st.header("Archive Stats")
@@ -132,13 +130,10 @@ if app_mode == "Story Weaver":
         st.markdown("<br>", unsafe_allow_html=True)
         
         if st.button("✨ Generate Story", type="primary", use_container_width=True):
-            if not os.getenv("OPENAI_API_KEY"):
-                st.error("Missing API Key")
-            else:
-                with st.spinner("Searching Archive & Writing..."):
-                    # RAG
-                    search_q = f"{prompt_input} {sel_genre} {' '.join(sel_keywords)} {' '.join(sel_chars)}"
-                    rag_results = perform_rag_search(search_q, limit=7)
+            with st.spinner("Searching Archive & Writing... (This may take time)..."):
+                # RAG
+                search_q = f"{prompt_input} {sel_genre} {' '.join(sel_keywords)} {' '.join(sel_chars)}"
+                rag_results = perform_rag_search(search_q, limit=7)
                     
                     context_chunks = []
                     for p in rag_results:
@@ -188,10 +183,7 @@ elif app_mode == "Poem Weaver":
         sel_p_keywords = st.multiselect("Themes / Keywords", poem_keywords[:50], placeholder="Select nature themes...")
         
         if st.button("🎶 Compose Poem", type="primary", use_container_width=True):
-            if not os.getenv("OPENAI_API_KEY"):
-                st.error("Missing API Key")
-            else:
-                with st.spinner("Composing..."):
+            with st.spinner("Composing... (This may take time)..."):
                     facets = {
                         "style": sel_style,
                         "keywords": sel_p_keywords,

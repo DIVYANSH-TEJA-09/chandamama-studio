@@ -1,5 +1,5 @@
 import os
-import openai
+
 from typing import Dict, Any
 
 def generate_story(facets: Dict[str, Any], context_text: str = "") -> str:
@@ -168,31 +168,11 @@ Label:
 
 def _call_llm_creative(prompt: str) -> str:
     """
-    Calls OpenAI API for creative storytelling.
-    Requires OPENAI_API_KEY environment variable.
+    Calls Local Qwen-72B for creative storytelling.
     """
-    api_key = os.getenv("OPENAI_API_KEY")
-    if not api_key:
-        return "ERROR: OPENAI_API_KEY not found in environment. Please check .env file."
-
     try:
-        openai.api_key = api_key
-        
-        response = openai.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": "You are a creative storyteller."},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0.7,
-            max_tokens=2000
-        )
-        
-        if response.choices and response.choices[0].message.content:
-            return response.choices[0].message.content.strip()
-        else:
-            return "No text returned from LLM."
-            
+        from src.local_llm import generate_response
+        return generate_response(prompt, system_prompt="You are a creative storyteller.", temperature=0.7, max_tokens=3500)
     except Exception as e:
         return f"LLM Error: {str(e)}"
 

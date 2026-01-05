@@ -37,7 +37,7 @@ The goal was to modernize the access and creativity around the **Chandamama** ma
 
 ## 3. Technical Architecture
 - **Frontend**: Streamlit (Python)
-- **Backend/Logic**: OpenAI GPT-4o-mini (Reasoning/Generation)
+- **Backend/Logic**: Qwen-72B (via Hugging Face API)
 - **Database**: Qdrant (Local Vector DB)
 - **Embeddings**: `intfloat/multilingual-e5-base`
 - **Data Pipeline**: Custom Python scripts for scrubbing and aggregation.
@@ -97,3 +97,11 @@ To identify the optimal retrieval strategy for high-coherence story generation b
     - Implemented a new retriever `src/retrieval_logics_test/story_embeddings_retrieval.py` that utilizes the `chandamama_stories` collection and `gte-multilingual-base` model.
     - Added a 5th column to the UI ("5. Story Embeddings") to visualize results from full-story vector search side-by-side with chunk-based methods.
 - **Goal:** Determine if retrieving whole stories by vector similarity yields better narrative priming than reconstructing stories from chunks.
+
+### Phase 8: Migration to Hugging Face API (Qwen-72B)
+- **Problem:** The initial reliance on OpenAI was costly/restricted OR local hardware constraints made running large models (Qwen-72B) impossible.
+- **Solution:**
+    - Refactored the entire backend (`src/story_gen.py`, `src/rag.py`, `app.py`) to decouple the LLM provider.
+    - Implemented `src/local_llm.py` as a unified interface using `huggingface_hub.InferenceClient`.
+    - Switched to the **Qwen-72B** model via the **Hugging Face Inference API**, enabling state-of-the-art performance without local GPU requirements.
+    - Updated dependencies to remove heavy local ML libraries (`torch`, `accelerate`) in favor of lightweight API clients.

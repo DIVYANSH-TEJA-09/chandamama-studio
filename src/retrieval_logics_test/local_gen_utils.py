@@ -1,5 +1,5 @@
 import os
-import openai
+
 from typing import Dict, Any
 
 # Import the original generate_story to verify we can wrap it or duplicate needed logic
