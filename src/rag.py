@@ -1,5 +1,5 @@
 import os
-import openai
+
 from typing import List, Dict, Any
 
 def build_rag_context(grouped_stories: List[Dict[str, Any]], max_stories: int = 3) -> str:
@@ -55,38 +55,33 @@ Context:
 {context}
 
 Question:
-{question}
-
-Answer:
-"""
-    return _call_llm_isolated(prompt)
-
-def _call_llm_isolated(prompt: str) -> str:
+def generate_answer(query: str, context: str) -> str:
     """
-    Calls OpenAI API with strict deterministic settings.
-    Requires OPENAI_API_KEY environment variable.
+    Generates an answer using Local Qwen-72B based on the retrieved context.
     """
-    api_key = os.getenv("OPENAI_API_KEY")
-    if not api_key:
-        return "ERROR: OPENAI_API_KEY not found in environment. Please check .env file."
-
+    
+    # Construct System Prompt
+    system_prompt_text = """
+    You are a helpful assistant for the Chandamama Children's Magazine archive.
+    Use the provided context to answer the user's question accurately.
+    If the answer is not in the context, say "I don't know based on the archive."
+    Do not hallucinate.
+    """
+    
+    # Construct User Prompt
+    user_prompt = f"""
+    Context:
+    {context}
+    
+    Question: {query}
+    
+    Answer (in English or Telugu as asked):
+    """
+    
     try:
-        openai.api_key = api_key
-        
-        response = openai.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant that answers questions based strictly on the provided context."},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0.0,
-            max_tokens=1000
-        )
-        
-        if response.choices and response.choices[0].message.content:
-            return response.choices[0].message.content.strip()
-        else:
-            return "No text returned from LLM."
-            
+        from src.local_llm import generate_response
+        return generate_response(user_prompt, system_prompt=system_prompt_text)
     except Exception as e:
-        return f"LLM Error: {str(e)}"
+        return f"Error generating answer: {str(e)}"
+
+
