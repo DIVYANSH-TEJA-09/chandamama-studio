@@ -1,5 +1,13 @@
 import os
 
+# Refactored to use src.config
+try:
+    from src import config
+except ImportError:
+    import sys
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
+    from src import config
+
 # Base paths
 # Getting the project root by going up two levels from this file (src/story_embedder/config.py -> src -> PROJECT_ROOT)
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -7,7 +15,7 @@ PROJECT_ROOT = os.path.dirname(os.path.dirname(SCRIPT_DIR))
 
 # Data paths
 CHUNKS_DIR = os.path.join(PROJECT_ROOT, "chunks")
-QDRANT_PATH = os.path.join(PROJECT_ROOT, "qdrant_db")
+QDRANT_PATH = config.QDRANT_PATH
 LOG_DIR = os.path.join(PROJECT_ROOT, "logs")
 
 # Ensure logs directory exists
@@ -17,17 +25,12 @@ os.makedirs(LOG_DIR, exist_ok=True)
 SKIPPED_STORIES_LOG = os.path.join(LOG_DIR, "skipped_stories.csv")
 
 # Qdrant Settings
-# Using a separate collection for story-level embeddings as requested
-COLLECTION_NAME = "chandamama_stories" 
+COLLECTION_NAME = config.STORY_COLLECTION_NAME 
 VECTOR_SIZE = 768
 
 # Model Settings
-# process: Switched to GTE-Multilingual-Base to support long context (8192 tokens)
-# e5-base length (512) was skipping too many full stories.
-MODEL_NAME = "Alibaba-NLP/gte-multilingual-base"
-MAX_TOKEN_LIMIT = 8192 
+MODEL_NAME = config.STORY_EMBEDDING_MODEL_NAME
+MAX_TOKEN_LIMIT = config.STORY_MAX_TOKEN_LIMIT 
 
 # Processing Settings
-# Reduced batch size to 1 because 8k tokens * 32 items = OOM (Memory Explosion)
-# Especially on Mac/MPS which has a 4GB single-tensor limit.
-BATCH_SIZE = 1
+BATCH_SIZE = config.STORY_BATCH_SIZE

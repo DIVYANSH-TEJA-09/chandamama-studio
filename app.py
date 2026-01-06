@@ -11,18 +11,9 @@ load_dotenv()
 sys.path.append(os.path.abspath("src"))
 
 # Import Modules
-# Import Modules
 from src.story_gen import generate_story, generate_poem
-from qdrant_client import QdrantClient
-from qdrant_client.models import Filter, FieldCondition, MatchValue, MatchAny
-from sentence_transformers import SentenceTransformer
-
-# Configuration
-STATS_PATH = "stats/global_stats.json"
-POEM_STATS_PATH = "stats/poem_stats.json"
-QDRANT_PATH = os.path.join(os.getcwd(), "qdrant_db")
-COLLECTION_NAME = "chandamama_chunks"
-MODEL_NAME = "intfloat/multilingual-e5-base"
+from src.retrieval_logics_test.story_embeddings_retrieval import StoryEmbeddingsRetriever
+from src import config
 
 # Page Config
 st.set_page_config(
@@ -33,15 +24,11 @@ st.set_page_config(
 
 # --- Initialization ---
 @st.cache_resource
-def load_resources():
-    client = QdrantClient(path=QDRANT_PATH)
-    if not client.collection_exists(COLLECTION_NAME):
-        raise ValueError(f"Collection '{COLLECTION_NAME}' not found at {QDRANT_PATH}. Please run rebuild_db.py.")
-    model = SentenceTransformer(MODEL_NAME)
-    return client, model
+def load_retriever():
+    return StoryEmbeddingsRetriever(top_k=2)
 
 try:
-    client, model = load_resources()
+    retriever = load_retriever()
 except Exception as e:
     st.error(f"Failed to load AI resources: {e}")
     st.stop()
@@ -57,25 +44,15 @@ def load_stats(path):
     except Exception as e:
         return {}
 
-global_stats = load_stats(STATS_PATH)
-poem_stats = load_stats(POEM_STATS_PATH)
+global_stats = load_stats(config.STATS_PATH)
+poem_stats = load_stats(config.POEM_STATS_PATH)
 
-# Helper: Embedding
-def get_embedding(text):
-    return model.encode(f"query: {text}", normalize_embeddings=True).tolist()
-
-# Helper: Search
-def perform_rag_search(query_text, limit=5):
-    embedding = get_embedding(query_text)
-    filters = Filter(must=[FieldCondition(key="language", match=MatchValue(value="TELUGU"))])
-    results = client.query_points(
-        collection_name=COLLECTION_NAME,
-        query=embedding,
-        query_filter=filters,
-        limit=limit,
-        with_payload=True
-    ).points
-    return results
+# Helper: Safe Key Access
+def get_keys(stats_dict, key_name):
+    data = stats_dict.get(key_name, {})
+    if isinstance(data, dict):
+        return list(data.keys())
+    return []
 
 # Helper: Safe Key Access
 def get_keys(stats_dict, key_name):
@@ -92,7 +69,7 @@ with st.sidebar:
     st.divider()
     st.divider()
     st.header("Status")
-    st.success("Qwen-72B (HF API): Ready ✅")
+    st.success(f"{config.LLM_MODEL_ID}: Ready ✅")
         
     st.divider()
     st.header("Archive Stats")
@@ -133,25 +110,35 @@ if app_mode == "Story Weaver":
             with st.spinner("Searching Archive & Writing... (This may take time)..."):
                 # RAG
                 search_q = f"{prompt_input} {sel_genre} {' '.join(sel_keywords)} {' '.join(sel_chars)}"
-                rag_results = perform_rag_search(search_q, limit=7)
+                rag_results = retriever.retrieve_points(search_q)
                     
-                    context_chunks = []
-                    for p in rag_results:
-                        chunk_id = p.payload.get('chunk_id', 'Unknown ID')
-                        context_chunks.append(f"[Excerpt from {p.payload.get('title', 'Unknown')} (Chunk ID: {chunk_id})]: {p.payload.get('text', '')}")
-                    context_text = "\n\n".join(context_chunks)
+                context_chunks = []
+                # Build context from Full Stories
+                full_texts = []
+                for p in rag_results:
+                    title = p.payload.get('title', 'Unknown')
+                    story_id = p.payload.get('story_id', 'Unknown ID')
+                    text = p.payload.get('text', '')
                     
-                    facets = {
-                        "genre": sel_genre,
-                        "prompt_input": prompt_input,
-                        "keywords": sel_keywords,
-                        "characters": sel_chars,
-                        "locations": sel_locs
-                    }
+                    # For UI display
+                    context_chunks.append(f"### {title} (ID: {story_id})\n{text[:200]}...")
                     
-                    story_out = generate_story(facets, context_text)
-                    st.session_state["gen_story"] = story_out
-                    st.session_state["rag_ctx"] = context_chunks
+                    # For LLM Context
+                    full_texts.append(f"Title: {title}\nStory: {text}")
+
+                context_text = "\n\n".join(full_texts)
+                
+                facets = {
+                    "genre": sel_genre,
+                    "prompt_input": prompt_input,
+                    "keywords": sel_keywords,
+                    "characters": sel_chars,
+                    "locations": sel_locs
+                }
+                
+                story_out = generate_story(facets, context_text)
+                st.session_state["gen_story"] = story_out
+                st.session_state["rag_ctx"] = context_chunks
 
     with col_preview:
         st.subheader("2. Output")

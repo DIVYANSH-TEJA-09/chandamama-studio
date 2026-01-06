@@ -88,6 +88,11 @@ class HybridRetriever:
             story_lines = [p.payload.get("text", "") for p in all_points]
             full_text = "\n".join(story_lines)
             
+            # Truncate if too long (Style doesn't need to be perfect, just setting tone)
+            MAX_STYLE_CHARS = 3000
+            if len(full_text) > MAX_STYLE_CHARS:
+                full_text = full_text[:MAX_STYLE_CHARS] + "... [TRUNCATED STYLE]"
+
             title = all_points[0].payload.get("title", "Unknown")
             return f"### STYLE REFERENCE: {title} (Genre: {genre})\n{full_text}"
 

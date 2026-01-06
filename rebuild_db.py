@@ -6,7 +6,7 @@ import sys
 sys.path.append(os.path.join(os.getcwd(), 'src'))
 
 try:
-    from src.populate_qdrant import main
+    from src.scripts.populate_qdrant import main
 except ImportError as e:
     print(f"Error: Failed to import 'src/populate_qdrant.py'.")
     print(f"Details: {e}")
@@ -17,7 +17,7 @@ if __name__ == "__main__":
     print("========================================")
     print("   Starting Chandamama DB Rebuild       ")
     print("========================================")
-    print(f"This script will re-index all chunks from '{os.path.join(os.getcwd(), 'chunks')}' into Qdrant.")
+    print(f"This script will re-index all chunks from '{os.path.join(os.getcwd(), 'data/chunks')}' into Qdrant.")
     print("This may take 10-20 minutes depending on CPU.")
     print("----------------------------------------")
     

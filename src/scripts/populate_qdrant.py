@@ -11,8 +11,9 @@ from sentence_transformers import SentenceTransformer
 # Configuration
 # dynamic project root based on this file's location (src/populate_qdrant.py -> parent -> PROJECT_ROOT)
 script_dir = os.path.dirname(os.path.abspath(__file__))
-PROJECT_ROOT = os.path.dirname(script_dir)
-CHUNKS_DIR = os.path.join(PROJECT_ROOT, "chunks")
+# src/scripts -> src -> root
+PROJECT_ROOT = os.path.dirname(os.path.dirname(script_dir))
+CHUNKS_DIR = os.path.join(PROJECT_ROOT, "data", "chunks")
 QDRANT_PATH = os.path.join(PROJECT_ROOT, "qdrant_db")
 COLLECTION_NAME = "chandamama_chunks"
 MODEL_NAME = "intfloat/multilingual-e5-base"

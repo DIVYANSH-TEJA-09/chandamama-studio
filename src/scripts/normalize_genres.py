@@ -4,7 +4,7 @@ import argparse
 from glob import glob
 
 # --- CONFIGURATION & CONSTANTS ---
-BASE_DIR = os.path.join(os.getcwd(), "1947-2012")
+BASE_DIR = os.path.join(os.getcwd(), "data", "1947-2012")
 
 # 1. FIXED NORMALIZED GENRES UNIVERSE (38 TOTAL)
 # Maps CODE -> { 'te': Telugu Label, 'content_type': Derived Type }

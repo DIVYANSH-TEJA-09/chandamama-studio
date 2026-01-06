@@ -4,21 +4,24 @@ from qdrant_client import QdrantClient
 from sentence_transformers import SentenceTransformer
 
 # Configuration
-QDRANT_PATH = os.path.join(os.getcwd(), "qdrant_db")
-COLLECTION_NAME = "chandamama_chunks"
-MODEL_NAME = "intfloat/multilingual-e5-base"
+try:
+    from src import config
+except ImportError:
+    import config
+
+# QDRANT_PATH, COLLECTION_NAME, MODEL_NAME removed, using config.*
 
 def main():
     print("Loading model...")
-    model = SentenceTransformer(MODEL_NAME)
+    model = SentenceTransformer(config.EMBEDDING_MODEL_NAME)
     
-    print(f"Connecting to Qdrant at {QDRANT_PATH}...")
-    client = QdrantClient(path=QDRANT_PATH)
+    print(f"Connecting to Qdrant at {config.QDRANT_PATH}...")
+    client = QdrantClient(path=config.QDRANT_PATH)
     
     # Check collection info
     try:
-        info = client.get_collection(COLLECTION_NAME)
-        print(f"Collection '{COLLECTION_NAME}' ready. Points: {info.points_count}")
+        info = client.get_collection(config.COLLECTION_NAME)
+        print(f"Collection '{config.COLLECTION_NAME}' ready. Points: {info.points_count}")
     except Exception as e:
         print(f"Error accessing collection: {e}")
         return
@@ -40,9 +43,9 @@ def main():
         
         # Search
         results = client.search(
-            collection_name=COLLECTION_NAME,
+            collection_name=config.COLLECTION_NAME,
             query_vector=embedding,
-            limit=3,
+            limit=config.SEARCH_LIMIT,
             with_payload=True
         )
         

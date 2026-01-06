@@ -1,0 +1,12 @@
+--- Testing Story Generation with Qwen 72B ---
+Prompt: 
+Write a very short story (3 sentences) about a rabbit who finds a golden carrot in the forest.
+Language: Telugu.
+
+Generating...
+Initializing HF Inference Client for Qwen/Qwen2.5-72B-Instruct...
+
+--- Response ---
+అరవింద్ అందామి జంగలంలో చాలు ఆకాశపు నించిన ఒక స్వర్ణక గజ్జర్‌ని చూడ్డారు. అతను దానిని తింటి, ఇది వాటి కుటుంబానికి చాల సంతోషం చెప్పాలనుకుంద
+----------------
+WARNING: Response might be irrelevant.

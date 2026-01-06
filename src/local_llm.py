@@ -1,52 +1,35 @@
 import os
 from huggingface_hub import InferenceClient
 from typing import Optional
+from src import config
+from src.local_llm_multi import generate_response_multi
 
-# Configuration
-MODEL_ID = "Qwen/Qwen2.5-7B-Instruct"
-# Using the InferenceClient which handles the API calls
-_client_instance = None
+# --- WRAPPER FOR SINGLE MODEL ---
+# This file is maintained for backward compatibility.
+# It now redirects to local_llm_multi for robust handling of both HF and OpenAI.
 
-def get_client() -> InferenceClient:
-    global _client_instance
-    if _client_instance is None:
-        token = os.getenv("HF_TOKEN")
-        if not token:
-            raise ValueError("HF_TOKEN not found in environment variables. Please add it to your .env file.")
-        
-        print(f"Initializing HF Inference Client for {MODEL_ID}...", flush=True)
-        _client_instance = InferenceClient(model=MODEL_ID, token=token)
-        
-    return _client_instance
+def get_client():
+    """Deprecated: Use local_llm_multi.get_client instead."""
+    from src.local_llm_multi import get_client as get_client_multi
+    return get_client_multi(config.LLM_MODEL_ID)
 
 def generate_response(
     prompt: str, 
     system_prompt: Optional[str] = None, 
-    max_tokens: int = 3000,
-    temperature: float = 0.7
+    max_tokens: int = config.LLM_MAX_TOKENS,
+    temperature: float = config.LLM_TEMPERATURE
 ) -> str:
     """
-    Generates response using Hugging Face Inference API (Chat Completion via Serverless).
+    Wrapper for local_llm_multi to maintain compatibility.
+    Uses config.LLM_MODEL_ID as the default model.
     """
-    client = get_client()
-    
-    messages = []
-    if system_prompt:
-        messages.append({"role": "system", "content": system_prompt})
-    
-    messages.append({"role": "user", "content": prompt})
-    
-    try:
-        response = client.chat_completion(
-            messages,
-            max_tokens=max_tokens,
-            temperature=temperature,
-            top_p=0.9,
-            frequency_penalty=0.5  # Reduce repetition
-        )
-        if response.choices and response.choices[0].message.content:
-            return response.choices[0].message.content
-        return ""
+    return generate_response_multi(
+        model_id=config.LLM_MODEL_ID,
+        prompt=prompt,
+        system_prompt=system_prompt,
+        max_tokens=max_tokens,
+        temperature=temperature
+    )
         
     except Exception as e:
         return f"HF API Error: {str(e)}"

@@ -38,6 +38,8 @@ class FullStoryRetriever:
                 seen.add(s_id)
 
         final_context_parts = []
+        current_total_chars = 0
+        MAX_CHARS = 6000  # API Limit Safety
 
         for story_id in unique_story_ids:
             # Scroll/Filter to get all chunks for this story
@@ -83,13 +85,28 @@ class FullStoryRetriever:
             month = first_payload.get("month", "Unknown")
 
             story_text_blocks = []
-            story_text_blocks.append(f"### Full Story: {title} (ID: {story_id}, Date: {year}-{month})")
+            header = f"### Full Story: {title} (ID: {story_id}, Date: {year}-{month})"
+            story_text_blocks.append(header)
             
+            story_content = ""
             for point in all_points:
                 text = point.payload.get("text", "").strip()
                 if text:
-                    story_text_blocks.append(text)
+                    story_content += text + "\n"
             
-            final_context_parts.append("\n".join(story_text_blocks))
+            story_text_blocks.append(story_content)
+            full_story_text = "\n".join(story_text_blocks)
+            
+            # Check length
+            if current_total_chars + len(full_story_text) > MAX_CHARS:
+                # Calculate remaining space
+                remaining = MAX_CHARS - current_total_chars
+                if remaining > 500: # Only add if we can add a meaningful amount
+                    truncated_text = full_story_text[:remaining] + "... [TRUNCATED DUE TO LENGTH]"
+                    final_context_parts.append(truncated_text)
+                break # Stop adding stories
+            
+            final_context_parts.append(full_story_text)
+            current_total_chars += len(full_story_text)
 
         return "\n\n".join(final_context_parts)

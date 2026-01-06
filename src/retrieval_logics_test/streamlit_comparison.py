@@ -68,7 +68,7 @@ st.markdown("Compare 5 distinct logic paths for story generation side-by-side.")
 def get_retrievers():
     try:
         r1 = ContextualRetriever(top_k=3)
-        r2 = FullStoryRetriever(top_k=3)
+        r2 = FullStoryRetriever(top_k=2)
         r3 = SimpleRetriever(top_k=7)
         r4 = HybridRetriever(content_top_k=3)
         r5 = StoryEmbeddingsRetriever(top_k=3)

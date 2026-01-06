@@ -1,17 +1,21 @@
 import os
 import json
 import sys
+try:
+    from src import config
+except ImportError:
+    import config
 
 print("Start...", flush=True)
 
-BASE_DIR = os.path.join(os.getcwd(), "1947-2012")
-OUTPUT_DIR = os.path.join(os.getcwd(), "chunks")
+BASE_DIR = os.path.join(os.getcwd(), "data", "1947-2012")
+OUTPUT_DIR = os.path.join(os.getcwd(), "data", "chunks")
 TEST_FILE = os.path.join(BASE_DIR, "1957", "చందమామ_1957_02.json")
 
-TARGET_MIN = 300
-TARGET_MAX = 500
-HARD_MIN = 150
-HARD_MAX = 700
+TARGET_MIN = config.CHUNK_TARGET_MIN
+TARGET_MAX = config.CHUNK_TARGET_MAX
+HARD_MIN = config.CHUNK_HARD_MIN
+HARD_MAX = config.CHUNK_HARD_MAX
 
 print("Config done. Defining functions...", flush=True)
 

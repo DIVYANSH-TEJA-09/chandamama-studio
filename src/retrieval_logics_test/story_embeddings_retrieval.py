@@ -4,37 +4,46 @@ from typing import List, Dict, Any
 from qdrant_client import QdrantClient
 from sentence_transformers import SentenceTransformer
 from .common_utils import get_qdrant_client
+from src import config
 
-# Hardcoded config to match src/story_embedder/config.py
-COLLECTION_NAME = "chandamama_stories"
-MODEL_NAME = "Alibaba-NLP/gte-multilingual-base"
+# Hardcoded config removed, using src.config
+# COLLECTION_NAME = "chandamama_stories"
+# MODEL_NAME = "Alibaba-NLP/gte-multilingual-base"
 
 class StoryEmbeddingsRetriever:
     def __init__(self, top_k: int = 3):
-        print(f"Loading model '{MODEL_NAME}' for Story Embeddings...")
+        print(f"Loading model '{config.STORY_EMBEDDING_MODEL_NAME}' for Story Embeddings...")
         # trust_remote_code=True required for GTE
-        self.model = SentenceTransformer(MODEL_NAME, trust_remote_code=True)
+        self.model = SentenceTransformer(config.STORY_EMBEDDING_MODEL_NAME, trust_remote_code=True)
         
         print(f"Getting shared Qdrant client...")
         self.client = get_qdrant_client()
         self.top_k = top_k
 
-    def retrieve(self, query: str) -> str:
+    def retrieve_points(self, query: str):
         """
-        Retrieves the top K similar FULL stories.
+        Retrieves the raw ScoredPoints for top K similar FULL stories.
         """
         # Embed query with prefix
         query_text = f"query: {query}"
         query_vector = self.model.encode(query_text, normalize_embeddings=True)
 
         # Search
-        # Note: We query the STORIES collection, not CHUNKS
         search_results = self.client.query_points(
-            collection_name=COLLECTION_NAME,
+            collection_name=config.STORY_COLLECTION_NAME,
             query=query_vector,
             limit=self.top_k,
             with_payload=True
         ).points
+        return search_results
+
+    def retrieve(self, query: str) -> str:
+        """
+        Retrieves the top K similar FULL stories as a formatted string.
+        """
+        search_results = self.retrieve_points(query)
+
+        context_parts = []
 
         context_parts = []
         for i, hit in enumerate(search_results):

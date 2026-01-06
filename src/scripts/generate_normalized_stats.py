@@ -2,8 +2,8 @@ import os
 import json
 import collections
 
-BASE_DIR = os.path.join(os.getcwd(), "1947-2012")
-OUTPUT_FILE = "stats/normalized_stats.json"
+BASE_DIR = os.path.join(os.getcwd(), "data", "1947-2012")
+OUTPUT_FILE = "data/stats/normalized_stats.json"
 
 def main():
     stats = {
