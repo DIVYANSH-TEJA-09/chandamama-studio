@@ -18,6 +18,7 @@ data/*
 !data/stats/
 !data/1947-2012/
 !data/chunks/
+!data/README.md
 
 # Ignore Qdrant Database (Large Binary)
 qdrant_db/
