@@ -12,11 +12,16 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# Data & Stats (Keep structure, ignore large files if needed, but keeping stats for now)
-# stats/
-# qdrant_db/ # This is large, usually ignored in git, but depends on user preference. 
-# For now, ignoring DB to be safe as it's large binary data.
+# Data & Stats
+# Ignore contents of data/ but keep directory structure
+data/*
+!data/stats/
+!data/1947-2012/
+!data/chunks/
+
+# Ignore Qdrant Database (Large Binary)
 qdrant_db/
+data/qdrant_db/
 
 # OS
 .DS_Store
