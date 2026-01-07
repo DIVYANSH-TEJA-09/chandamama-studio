@@ -13,11 +13,11 @@ An AI-powered application to explore, search, and "weave" new stories inspired b
 
 ```mermaid
 graph LR
-    User[User Plot Idea] --> Retriever[Story Embeddings Retriever]
-    Retriever -- Search --> Qdrant[(Qdrant DB)]
-    Qdrant -- Return Top 2 --> Context[Full Story Context]
-    Context --> LLM[LLM (GPT-4o-mini)]
-    LLM --> Story[New Chandamama Story]
+    User["User Plot Idea"] --> Retriever["Story Embeddings Retriever"]
+    Retriever -- Search --> Qdrant[("Qdrant DB")]
+    Qdrant -- Return Top 2 --> Context["Full Story Context"]
+    Context --> LLM["LLM (GPT-4o-mini)"]
+    LLM --> Story["New Chandamama Story"]
 ```
 
 ## Setup & Installation

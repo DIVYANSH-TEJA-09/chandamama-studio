@@ -46,11 +46,11 @@ The goal was to modernize the access and creativity around the **Chandamama** ma
 
 ```mermaid
 graph LR
-    User[User Plot Idea] --> Retriever[Story Embeddings Retriever]
-    Retriever -- Search --> Qdrant[(Qdrant DB)]
-    Qdrant -- Return Top 2 --> Context[Full Story Context]
-    Context --> LLM[LLM (GPT-4o-mini)]
-    LLM --> Story[New Chandamama Story]
+    User["User Plot Idea"] --> Retriever["Story Embeddings Retriever"]
+    Retriever -- Search --> Qdrant[("Qdrant DB")]
+    Qdrant -- Return Top 2 --> Context["Full Story Context"]
+    Context --> LLM["LLM (GPT-4o-mini)"]
+    LLM --> Story["New Chandamama Story"]
 ```
 
 ## 4. Challenges & Solutions
@@ -137,22 +137,22 @@ To identify the optimal retrieval strategy for high-coherence story generation b
 
 ```mermaid
 graph TD
-    A[User Input] -->|Define Facets| B(Genre, Keywords, Characters)
-    B -->|Construct Query| C[Semantic Search Query]
+    A["User Input"] -->|Define Facets| B("Genre, Keywords, Characters")
+    B -->|Construct Query| C["Semantic Search Query"]
     
     subgraph "Retrieval Layer (Qdrant)"
-    C -->|Encode via Alibaba GTE| D{Vector Search}
-    D -->|Match Stories| E[Top 2 Full Stories]
+    C -->|Encode via Alibaba GTE| D{"Vector Search"}
+    D -->|Match Stories| E["Top 2 Full Stories"]
     end
     
     subgraph "Context Assembly"
-    E -->|Extract| F[Full Text + Metadata]
-    F -->|Format| G[System Prompt]
+    E -->|Extract| F["Full Text + Metadata"]
+    F -->|Format| G["System Prompt"]
     end
     
     subgraph "Generation Layer (The Council)"
-    G -->|Input| H[LLM (GPT-4o / Qwen / Llama)]
-    H -->|Generate| I[New Telugu Story]
+    G -->|Input| H["LLM (GPT-4o / Qwen / Llama)"]
+    H -->|Generate| I["New Telugu Story"]
     end
     
     style D fill:#f9f,stroke:#333
