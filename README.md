@@ -64,3 +64,4 @@ streamlit run app.py
 
 ## Research Notes
 This project demonstrates **Retrieval Augmented Generation (RAG)** applied to low-resource languages (Telugu) and specific cultural archives. See `report.md` for full research journey.
+h

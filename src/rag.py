@@ -29,32 +29,34 @@ def build_rag_context(grouped_stories: List[Dict[str, Any]], max_stories: int = 
     return "\n".join(context_parts).strip()
 
 
-def answer_question(question: str, context: str) -> str:
-    """
-    Generates an answer using an LLM with a strict, extensive prompt.
-    """
-    if not context:
-        return "ఈ సమాచారం అందించిన కథలలో లేదు."
 
-    # EXACT PROMPT (DO NOT MODIFY)
-    prompt = f"""
-PROMPT:
-You are answering questions using a Telugu literature archive (Chandamama).
+# def answer_question(question: str, context: str) -> str:
+#     """
+#     Generates an answer using an LLM with a strict, extensive prompt.
+#     """
+#     if not context:
+#         return "ఈ సమాచారం అందించిన కథలలో లేదు."
+#
+#     # EXACT PROMPT (DO NOT MODIFY)
+#     prompt = f"""
+# PROMPT:
+# You are answering questions using a Telugu literature archive (Chandamama).
+#
+# IMPORTANT RULES:
+# - Use ONLY the provided context.
+# - Do NOT use outside knowledge.
+# - Do NOT invent facts or stories.
+# - If the answer is NOT found in the context, say clearly:
+#   "ఈ సమాచారం అందించిన కథలలో లేదు."
+#
+# Language:
+# - Answer in Telugu.
+#
+# Context:
+# {context}
+#
+# Question:
 
-IMPORTANT RULES:
-- Use ONLY the provided context.
-- Do NOT use outside knowledge.
-- Do NOT invent facts or stories.
-- If the answer is NOT found in the context, say clearly:
-  "ఈ సమాచారం అందించిన కథలలో లేదు."
-
-Language:
-- Answer in Telugu.
-
-Context:
-{context}
-
-Question:
 def generate_answer(query: str, context: str) -> str:
     """
     Generates an answer using Local Qwen-72B based on the retrieved context.

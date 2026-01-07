@@ -13,7 +13,7 @@ EMBEDDING_MODEL_NAME = "intfloat/multilingual-e5-base"
 SEARCH_LIMIT = 5
 
 # LLM Configuration
-LLM_MODEL_ID = "gpt-4o-mini"
+LLM_MODEL_ID = "openai/gpt-oss-120b"
 LLM_MAX_TOKENS = 3000
 LLM_TEMPERATURE = 0.7
 
@@ -32,7 +32,8 @@ MODEL_API_KEY_MAP = {
     "meta-llama/Meta-Llama-3.1-70B-Instruct": "HF_TOKEN_LLAMA", 
     "google/gemma-2-27b-it": "HF_TOKEN_GEMMA",
     "mistralai/Mistral-Nemo-Instruct-2407": "HF_TOKEN_MISTRAL",
-    "gpt-4o-mini": "OPENAI_API_KEY"
+    "gpt-4o-mini": "OPENAI_API_KEY",
+    "openai/gpt-oss-120b": "GROQ_API_KEY"
 }
 
 # Story Embeddings (Alibaba GTE)

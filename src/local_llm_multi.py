@@ -24,15 +24,28 @@ def get_client(model_id: str):
     # 1. Try to load from Environment
     api_key = os.getenv(config_value)
     
-    # 2. If not found in Env, assume config_value IS the key (fallback for hardcoded keys)
+    # 2. If not found in Env:
     if not api_key:
+        # If the config value looks like an Env Var name (UPPERCASE with underscores), assume it's missing.
+        if config_value.isupper() and "_" in config_value and " " not in config_value:
+             print(f"ERROR: Environment variable '{config_value}' is missing from .env file.", flush=True)
+             raise ValueError(f"Missing Environment Variable: {config_value}. Please add it to your .env file.")
+        
+        # Otherwise, assume config_value might be the key itself (fallback)
         api_key = config_value
     
     if not api_key or (len(api_key) < 10): # Basic validation
          raise ValueError(f"API Key not found for {model_id}. Checked env var '{config_value}' and direct value.")
 
+    # Groq Models
+    if config_value == "GROQ_API_KEY":
+        print(f"Initializing Groq Client for {model_id}...", flush=True)
+        from groq import Groq
+        client = Groq(api_key=api_key)
+        _client_instances[model_id] = ("groq", client)
+
     # OpenAI Models
-    if "gpt" in model_id.lower():
+    elif "gpt" in model_id.lower():
         print(f"Initializing OpenAI Client for {model_id}...", flush=True)
         client = OpenAI(api_key=api_key)
         _client_instances[model_id] = ("openai", client)
@@ -76,6 +89,18 @@ def generate_response_multi(
             )
             return response.choices[0].message.content
             
+        # GROQ
+        elif client_type == "groq":
+            response = client.chat.completions.create(
+                model=model_id,
+                messages=messages,
+                max_tokens=max_tokens,
+                temperature=temperature,
+                # top_p=1, # Default
+                # stream=False # Default
+            )
+            return response.choices[0].message.content or ""
+
         # HUGGING FACE
         elif client_type == "hf":
             response = client.chat_completion(
