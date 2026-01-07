@@ -38,29 +38,18 @@ pip install -r requirements.txt
 2.  **Add your API Key:**
     - Open `.env` and paste your `OPENAI_API_KEY`.
 
-### 5. ⚡ Build the Database
-Run this script to index the chandamama chunks locally.
+### 5. ⚡ Build the Database (All-in-One)
+Run the master rebuild script. It handles both **Chunk Indexing** (for RAG) and **Story Embeddings** (for The Council).
+
 ```bash
 python rebuild_db.py
 ```
-*Wait ~10 mins for it to finish.*
 
-### 6. Run the App
-```bash
-streamlit run app.py
-```
-
-### 7. 📖 Story-Level Embedding Pipeline (Optional)
-If you need to generate story-level embeddings for style imitation:
-1.  **Dry Run (Test):**
-    ```bash
-    python -m src.story_embedder.main --dry-run
-    ```
-2.  **Live Run:**
-    ```bash
-    python -m src.story_embedder.main
-    ```
-> **Note:** This process might take 20-30 minutes. It logs skipped stories to `logs/skipped_stories.csv`.
+**Workflow:**
+1.  **Chunk Indexing**: Runs automatically (~10 mins).
+2.  **Story Embeddings**: The script will ask `Build Story Embeddings? (y/n)`.
+    *   Type `y` if you want to enable "Full Story Retrieval" features.
+    *   This ensures `qdrant_db/` is fully populated for all app modes.
 
 ---
 

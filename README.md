@@ -4,9 +4,21 @@ An AI-powered application to explore, search, and "weave" new stories inspired b
 
 ## Features
 - **📖 Story Weaver**: Generate *new* stories in strict Chandamama style, grounded in actual archive content (RAG).
+- **🏛️ The Council**: Evaluate story quality across 5 top LLMs (GPT-4o, Qwen 2.5, Llama 3.1, etc.).
 - **🪕 Poem Weaver**: Compose new Telugu poems and songs based on archive themes.
-- **🔍 RAG Search**: Semantically search 30,000+ chunks of Telugu text.
+- **🔍 RAG Search**: Semantically search full stories using `Alibaba-NLP/gte-multilingual-base` (8k context).
 - **📊 Analytics**: View stats on 10,000+ stories (Authors, Characters, Locations).
+
+## 🧠 System Architecture (RAG Flow)
+
+```mermaid
+graph LR
+    User["User Plot Idea"] --> Retriever["Story Embeddings Retriever"]
+    Retriever -- Search --> Qdrant[("Qdrant DB")]
+    Qdrant -- Return Top 2 --> Context["Full Story Context"]
+    Context --> LLM["LLM (GPT-4o-mini)"]
+    LLM --> Story["New Chandamama Story"]
+```
 
 ## Setup & Installation
 

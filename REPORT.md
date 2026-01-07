@@ -37,10 +37,21 @@ The goal was to modernize the access and creativity around the **Chandamama** ma
 
 ## 3. Technical Architecture
 - **Frontend**: Streamlit (Python)
-- **Backend/Logic**: Qwen-2.5-7B-Instruct (via Hugging Face API)
+- **Backend/Logic**: OpenAI (GPT-4o-mini) / Hugging Face (Qwen 2.5)
 - **Database**: Qdrant (Local Vector DB)
-- **Embeddings**: `intfloat/multilingual-e5-base`
+- **Embeddings**: `Alibaba-NLP/gte-multilingual-base` (Optimization: 8192 sequence length for full stories)
 - **Data Pipeline**: Custom Python scripts for scrubbing and aggregation.
+
+## 🧠 System Architecture (RAG Flow)
+
+```mermaid
+graph LR
+    User["User Plot Idea"] --> Retriever["Story Embeddings Retriever"]
+    Retriever -- Search --> Qdrant[("Qdrant DB")]
+    Qdrant -- Return Top 2 --> Context["Full Story Context"]
+    Context --> LLM["LLM (GPT-4o-mini)"]
+    LLM --> Story["New Chandamama Story"]
+```
 
 ## 4. Challenges & Solutions
 | Challenge | Solution |
@@ -109,3 +120,41 @@ To identify the optimal retrieval strategy for high-coherence story generation b
     - **Efficiency:** Added `frequency_penalty` and boosted `max_tokens` to 3500 to ensure completely generated stories without loops or cut-offs.
     - **Interactive Comparison:** Enhanced `streamlit_comparison.py` with dynamic checkboxes, allowing users to selectively run specific retrieval strategies (1-5) to save time and tokens.
     - **Cleanup:** Completely removed all `openai`, `torch`, and `accelerate` dependencies, resulting in a lightweight, pure-API codebase.
+### Phase 9: The Council of Storytellers & Mechanism 5
+- **Objective:** Establish a robust benchmarking framework to compare different LLMs on their ability to weave authentic Chandamama stories.
+- **The "Council":** A multi-model evaluation harness testing:
+    1.  `Qwen/Qwen2.5-72B-Instruct`
+    2.  `meta-llama/Meta-Llama-3.1-70B-Instruct`
+    3.  `google/gemma-2-27b-it`
+    4.  `mistralai/Mistral-Nemo-Instruct-2407`
+    5.  `gpt-4o-mini`
+- **Retrieval Mechanism 5: Full Story Embeddings**
+    - Moved beyond chunking. We now embed the *entire* story text as a single semantic unit using **Alibaba-NLP/gte-multilingual-base** (8192 token context).
+    - **Logic:** `Query` -> `Vector Search (Stories)` -> `Retrieve Full Text` -> `LLM`.
+    - This preserves the complete narrative arc, moral lesson, and tonal consistency, which chunking often fractured.
+
+### 🏛️ Architecture & RAG Flow (Mechanism 5)
+
+```mermaid
+graph TD
+    A["User Input"] -->|Define Facets| B("Genre, Keywords, Characters")
+    B -->|Construct Query| C["Semantic Search Query"]
+    
+    subgraph "Retrieval Layer (Qdrant)"
+    C -->|Encode via Alibaba GTE| D{"Vector Search"}
+    D -->|Match Stories| E["Top 2 Full Stories"]
+    end
+    
+    subgraph "Context Assembly"
+    E -->|Extract| F["Full Text + Metadata"]
+    F -->|Format| G["System Prompt"]
+    end
+    
+    subgraph "Generation Layer (The Council)"
+    G -->|Input| H["LLM (GPT-4o / Qwen / Llama)"]
+    H -->|Generate| I["New Telugu Story"]
+    end
+    
+    style D fill:#f9f,stroke:#333
+    style H fill:#bbf,stroke:#333
+```

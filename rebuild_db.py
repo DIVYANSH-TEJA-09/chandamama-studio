@@ -21,10 +21,37 @@ if __name__ == "__main__":
     print("This may take 10-20 minutes depending on CPU.")
     print("----------------------------------------")
     
-    # Run the ingestion logic
+    # Run the ingestion logic (Chunks)
     main()
     
     print("========================================")
-    print("   DB Rebuild Complete!                 ")
+    print("   Chunk Indexing Complete!             ")
+    print("========================================")
+
+    # Ask user if they want to build Story Embeddings (Mechanism 5)
+    print("\n[Optional] Do you want to build 'Full Story Embeddings' (Mechanism 5)?")
+    print("This is required for 'The Council' and 'Story Search' features.")
+    print("Note: This uses the 'Alibaba-NLP/gte-multilingual-base' model.")
+    
+    response = input("Build Story Embeddings? (y/n): ").strip().lower()
+    
+    if response == 'y':
+        print("\nStarting Story Embedding Pipeline...")
+        print("----------------------------------------")
+        try:
+            from src.story_embedder.main import main as story_main
+            story_main()
+            print("========================================")
+            print("   Story Embedding Complete!            ")
+            print("========================================")
+        except ImportError as e:
+            print(f"Error importing story embedder: {e}")
+        except Exception as e:
+            print(f"Error running story embedder: {e}")
+    else:
+        print("Skipping Story Embeddings.")
+
+    print("\n========================================")
+    print("   All Done!                            ")
     print("========================================")
     print("You can now run 'streamlit run app.py' with full RAG support.")

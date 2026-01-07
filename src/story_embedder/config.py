@@ -14,7 +14,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(os.path.dirname(SCRIPT_DIR))
 
 # Data paths
-CHUNKS_DIR = os.path.join(PROJECT_ROOT, "chunks")
+CHUNKS_DIR = os.path.join(PROJECT_ROOT, "data", "chunks")
 QDRANT_PATH = config.QDRANT_PATH
 LOG_DIR = os.path.join(PROJECT_ROOT, "logs")
 
