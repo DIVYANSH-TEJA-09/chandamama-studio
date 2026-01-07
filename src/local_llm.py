@@ -31,5 +31,4 @@ def generate_response(
         temperature=temperature
     )
         
-    except Exception as e:
-        return f"HF API Error: {str(e)}"
+
