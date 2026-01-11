@@ -28,23 +28,13 @@ LLM_MODEL_ID = "openai/gpt-oss-120b"
 LLM_MAX_TOKENS = 3000
 LLM_TEMPERATURE = 0.7
 
-# Council of Storytellers Configuration
-COUNCIL_MODELS = [
-    "gpt-4o-mini",
-    "Qwen/Qwen2.5-72B-Instruct",
-    "meta-llama/Meta-Llama-3.1-70B-Instruct",
-    "google/gemma-2-27b-it",
-    "mistralai/Mistral-Nemo-Instruct-2407",
+# Model Configuration
+AVAILABLE_MODELS = [
     "openai/gpt-oss-120b"
 ]
 
 # Map models to specific Environment Variable names for their API keys
 MODEL_API_KEY_MAP = {
-    "Qwen/Qwen2.5-72B-Instruct": "HF_TOKEN_QWEN",
-    "meta-llama/Meta-Llama-3.1-70B-Instruct": "HF_TOKEN_LLAMA", 
-    "google/gemma-2-27b-it": "HF_TOKEN_GEMMA",
-    "mistralai/Mistral-Nemo-Instruct-2407": "HF_TOKEN_MISTRAL",
-    "gpt-4o-mini": "OPENAI_API_KEY",
     "openai/gpt-oss-120b": "GROQ_API_KEY"
 }
 

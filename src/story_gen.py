@@ -23,10 +23,10 @@ def generate_story(facets: Dict[str, Any], context_text: str = "", llm_params: D
     
     # Construct strictly formatted prompt
     prompt = f"""
-You are a classic Chandamama Telugu storyteller.
+You are a classic Telugu storyteller.
 
 Your task is to write an ORIGINAL Telugu children’s story that strictly follows
-the STYLE, RHYTHM, and MORAL STRUCTURE of traditional Chandamama tales.
+the STYLE, RHYTHM, and MORAL STRUCTURE of traditional Telugu folktales.
 
 ==================================================
 ARCHIVE CONTEXT (STYLE LEARNING ONLY)
@@ -45,7 +45,7 @@ DO NOT retell, adapt, or reference these stories.
 ==================================================
 STYLE BANK (MANDATORY LINGUISTIC ANCHORS)
 ==================================================
-Use the following Chandamama-style Telugu phrase patterns
+Use the following Classic Telugu phrase patterns
 to guide your language, rhythm, and tone.
 
 Use them NATURALLY.
@@ -98,12 +98,12 @@ These are for inspiration only.
 They must NOT appear mechanically in the title or story.
 
 User Hint:
-{custom_instruction if custom_instruction else "Create a meaningful Chandamama-style story using the above guidance."}
+{custom_instruction if custom_instruction else "Create a meaningful classic-style story using the above guidance."}
 
 ==================================================
 TITLE INSTRUCTION (VERY IMPORTANT)
 ==================================================
-- The title must feel like a REAL Chandamama story title.
+- The title must feel like a REAL Classic Folktale title.
 - Keep it short, natural, and expressive.
 - It must NOT be a summary.
 - It must NOT combine keywords mechanically.
@@ -141,7 +141,7 @@ Do NOT show this plan in the output.
 OUTPUT FORMAT (STRICT)
 ==================================================
 Title:
-<Short Chandamama-style title>
+<Short Classic Folktale-style title>
 
 Story:
 <Full Telugu story>
@@ -156,7 +156,7 @@ Label:
     
     # Call isolated LLM function
     try:
-        story_text = _call_llm_creative(prompt, llm_params)
+        story_text = _call_llm_creative(prompt)
     except Exception as e:
         return f"Error generating story: {str(e)}"
 
@@ -202,7 +202,7 @@ def generate_poem(facets: Dict[str, Any], llm_params: Dict[str, Any] = None) -> 
     keywords_str = ", ".join(keywords) if keywords else "None"
     
     prompt = f"""
-You are a playful Telugu Poet (Kavi) writing for Chandamama children's magazine.
+You are a playful Telugu Poet (Kavi) writing for a children's magazine.
 
 Goal: Write a {style} in Telugu.
 

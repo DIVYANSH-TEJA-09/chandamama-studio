@@ -14,7 +14,7 @@ from src import config
 
 # Page Config
 st.set_page_config(
-    page_title="Chandamama Studio",
+    page_title="Classic Telugu Studio",
     page_icon="🌙",
     layout="wide"
 )
@@ -60,7 +60,7 @@ def get_keys(stats_dict, key_name):
 
 # Sidebar Navigation
 with st.sidebar:
-    st.title("🌙 Chandamama Studio")
+    st.title("🌙 Classic Telugu Studio")
     app_mode = st.radio("Choose Mode", ["Story Weaver", "Poem Weaver", "Settings"])
     
     st.divider()
@@ -89,7 +89,7 @@ with st.sidebar:
 # --- STORY WEAVER ---
 if app_mode == "Story Weaver":
     st.title("📖 Story Weaver")
-    st.caption("Weave new stories grounded in the Chandamama Archive.")
+    st.caption("Weave new stories grounded in Classic Telugu Literature.")
 
     col_ctrl, col_preview = st.columns([1, 1], gap="large")
 
@@ -209,7 +209,7 @@ elif app_mode == "Settings":
         st.subheader("Model Selection")
         
         # Load Council Models from Config
-        available_models = config.COUNCIL_MODELS
+        available_models = config.AVAILABLE_MODELS
         
         # Current Value
         curr_model = st.session_state["llm_settings"]["model"]

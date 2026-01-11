@@ -1,9 +1,9 @@
-# Chandamama Studio 🌙
+# Classic Telugu Studio 🌙
 
-An AI-powered application to explore, search, and "weave" new stories inspired by the legendary *Chandamama* magazine archive (1947-2012).
+An AI-powered application to explore, search, and "weave" new stories inspired by Classic Telugu Literature.
 
 ## Features
-- **📖 Story Weaver**: Generate *new* stories in strict Chandamama style, grounded in actual archive content (RAG).
+- **📖 Story Weaver**: Generate *new* stories in strict classic style, grounded in actual archive content (RAG).
 - **🏛️ The Council**: Evaluate story quality across 5 top LLMs (GPT-4o, Qwen 2.5, Llama 3.1, etc.).
 - **🪕 Poem Weaver**: Compose new Telugu poems and songs based on archive themes.
 - **🔍 RAG Search**: Semantically search full stories using `Alibaba-NLP/gte-multilingual-base` (8k context).
