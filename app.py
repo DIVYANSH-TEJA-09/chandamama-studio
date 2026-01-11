@@ -7,9 +7,6 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
-# Add src to path
-sys.path.append(os.path.abspath("src"))
-
 # Import Modules
 from src.story_gen import generate_story, generate_poem
 from src.retrieval_logics_test.story_embeddings_retrieval import StoryEmbeddingsRetriever
