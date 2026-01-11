@@ -158,3 +158,107 @@ graph TD
     style D fill:#f9f,stroke:#333
     style H fill:#bbf,stroke:#333
 ```
+
+### Phase 10: Cloud Deployment & Qdrant Cloud Migration (Current)
+
+#### Objective
+Deploy the Chandamama Studio application to the cloud using free tier services, ensuring persistent vector database and zero infrastructure costs.
+
+#### Challenge
+- **Local Qdrant Database Issue:** The embedded Qdrant DB (200-500MB) was stored in the repository, causing:
+  - Large Git repository size
+  - Potential data loss in cloud environments (local ephemeral storage)
+  - Weekly rebuilds needed on stateless cloud platforms
+
+#### Solution: Dual-Mode Qdrant Configuration
+
+**Code Changes:**
+
+1. **`src/config.py` - Enhanced Configuration**
+   - Added support for **Qdrant Cloud** via environment variables:
+     - `QDRANT_URL`: Cloud cluster endpoint
+     - `QDRANT_API_KEY`: Cloud authentication token
+   - Implemented intelligent fallback logic:
+     - If cloud credentials provided → Use Qdrant Cloud
+     - If credentials absent → Fall back to local `qdrant_db/`
+   - New variable `QDRANT_MODE` tracks which mode is active ("cloud" or "local")
+
+2. **`app.py` - Cleanup**
+   - Removed auto-rebuild subprocess logic (no longer needed with cloud)
+   - Restored clean imports and original application flow
+   - Application now seamlessly works with both local and cloud Qdrant
+
+#### Deployment Strategy
+
+**Platform Selection:**
+- **Frontend:** Streamlit Cloud (free tier, native Streamlit support, 2-minute deployment)
+- **Vector Database:** Qdrant Cloud (free tier, 500MB storage, persistent data)
+- **LLMs:** Existing API keys (OpenAI, HuggingFace, Groq, Gemini)
+
+**Benefits:**
+- ✅ Zero infrastructure costs
+- ✅ No data loss (persistent cloud storage)
+- ✅ No weekly rebuilds
+- ✅ Lightning-fast load times
+- ✅ Fully managed services
+- ✅ Easy to scale if needed
+
+#### Files Created/Updated
+
+**New Configuration Files:**
+- `.streamlit/config.toml` - Theme and server optimization for Streamlit Cloud
+- `QDRANT_CLOUD_SETUP.md` - Comprehensive 8-step setup guide for Qdrant Cloud
+- `STREAMLIT_CLOUD_DEPLOY.md` - Complete Streamlit Cloud deployment guide
+- `QDRANT_DB_GUIDE.md` - Guide for local database setup and management
+- `QDRANT_CLOUD_QUICK.md` - Quick reference for rapid Qdrant Cloud setup
+- `QUICK_DEPLOY.txt` - Quick reference for 3-step deployment process
+
+**Removed Files (Azure Pivot):**
+- Removed 13 Azure-specific files (Dockerfile, azure.yaml, infra/, .azure/)
+- Rationale: Streamlit Cloud superior for Streamlit apps
+
+#### Setup Workflow
+
+1. User creates Qdrant Cloud account at https://cloud.qdrant.io (free)
+2. User extracts cluster URL and API key
+3. User updates `.env` with `QDRANT_URL` and `QDRANT_API_KEY`
+4. User runs `python rebuild_db.py` to populate cloud database
+5. User deploys to Streamlit Cloud from GitHub
+6. User adds secrets to Streamlit Cloud dashboard
+7. Live application accessible at `https://chandamama-studio-xxxxx.streamlit.app`
+
+#### Technical Details
+
+- **Environment Variable Management:**
+  - API keys stored in `.env` (excluded from Git via `.gitignore`)
+  - Streamlit Cloud uses "Secrets" panel for secure credential management
+  - Configuration supports both local development and cloud deployment
+
+- **Database Behavior:**
+  - **Local Mode:** Uses embedded `qdrant_db/` directory, requires rebuild after deployment
+  - **Cloud Mode:** Uses persistent Qdrant Cloud cluster, data survives restarts
+  - **Fallback:** If cloud credentials unavailable, automatically uses local (useful for development)
+
+- **Performance:**
+  - Cloud mode: Instant database loads (no rebuild)
+  - Local mode: ~5-10 minute rebuild time on first load
+  - Both modes support identical RAG retrieval functionality
+
+#### Status
+
+✅ **Code Ready:** All necessary modifications completed
+- Configuration supports dual-mode (cloud/local)
+- Application seamlessly switches based on environment
+- No breaking changes to existing functionality
+
+⏳ **Pending User Actions:**
+- Create Qdrant Cloud account
+- Run `python rebuild_db.py` (populates cloud database)
+- Deploy to Streamlit Cloud
+- Add secrets to Streamlit Cloud dashboard
+
+#### Git Repository
+
+- All code pushed to GitHub successfully (exit code 0)
+- Repository clean and ready for Streamlit Cloud deployment
+- No uncommitted changes
