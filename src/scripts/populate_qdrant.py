@@ -1,5 +1,6 @@
 
 import os
+import sys
 import json
 import uuid
 from typing import List, Dict, Any
@@ -8,15 +9,19 @@ from qdrant_client import QdrantClient
 from qdrant_client.http import models
 from sentence_transformers import SentenceTransformer
 
+# Add the project root to sys.path to allow importing src.config
+# Current file: src/scripts/populate_qdrant.py
+# Root structure: src/scripts/../.. -> project root
+current_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(os.path.dirname(current_dir))
+sys.path.insert(0, project_root)
+
+from src import config
+
 # Configuration
-# dynamic project root based on this file's location (src/populate_qdrant.py -> parent -> PROJECT_ROOT)
-script_dir = os.path.dirname(os.path.abspath(__file__))
-# src/scripts -> src -> root
-PROJECT_ROOT = os.path.dirname(os.path.dirname(script_dir))
-CHUNKS_DIR = os.path.join(PROJECT_ROOT, "data", "chunks")
-QDRANT_PATH = os.path.join(PROJECT_ROOT, "qdrant_db")
-COLLECTION_NAME = "chandamama_chunks"
-MODEL_NAME = "intfloat/multilingual-e5-base"
+CHUNKS_DIR = os.path.join(project_root, "data", "chunks")
+COLLECTION_NAME = config.COLLECTION_NAME
+MODEL_NAME = config.EMBEDDING_MODEL_NAME
 VECTOR_SIZE = 768
 BATCH_SIZE = 64
 
@@ -37,8 +42,17 @@ def load_chunks(file_path: str) -> List[Dict[str, Any]]:
         return []
 
 def main():
-    print(f"Initializing Qdrant at {QDRANT_PATH}...")
-    client = QdrantClient(path=QDRANT_PATH)
+    print(f"Initializing Qdrant at {config.QDRANT_PATH}...")
+    print(f"Mode: {getattr(config, 'QDRANT_MODE', 'unknown')}")
+    
+    # Initialize Client based on configuration
+    if config.QDRANT_URL and config.QDRANT_API_KEY:
+        client = QdrantClient(
+            url=config.QDRANT_URL,
+            api_key=config.QDRANT_API_KEY
+        )
+    else:
+        client = QdrantClient(path=config.QDRANT_PATH)
 
     # Create collection if not exists
     if not client.collection_exists(collection_name=COLLECTION_NAME):
@@ -71,28 +85,17 @@ def main():
         for i in range(0, len(chunks), BATCH_SIZE):
             batch = chunks[i:i + BATCH_SIZE]
             
-            # Prepare inputs for embedding (e5 requires "query: " or "passage: " prefix, 
-            # but usually for retrieval. For indexing, "passage: " is common or raw. 
-            # The user just said "embed text". 
-            # Multilingual-e5 docs say: "passage: " for docs, "query: " for queries.
-            # I will use "passage: " prefix as best practice for e5.)
+            # Prepare inputs for embedding
+            # "passage: " prefix for e5 models
             texts_to_embed = [f"passage: {c['text']}" for c in batch]
             
             embeddings = model.encode(texts_to_embed, normalize_embeddings=True)
             
             points = []
             for j, chunk in enumerate(batch):
-                # Use a deterministic UUID or just a random one? 
-                # User said "One chunk = one Qdrant point". 
-                # Chunks have "chunk_id" like "1947_07_01_01". We can use that as ID if Qdrant supports string IDs (it does, UUIDs or ints).
-                # Using UUID based on chunk_id for consistency.
+                # Deterministic UUID based on chunk_id
                 point_id = str(uuid.uuid5(uuid.NAMESPACE_DNS, chunk['chunk_id']))
                 
-                # Payload is the chunk itself (excluding text? No, user said "Metadata is stored ONLY as payload". 
-                # Usually text is also in payload for retrieval display. User said "Only `chunk["text"]` is embedded".
-                # User constraint: "Metadata is stored ONLY as payload (never embedded)". 
-                # It doesn't explicitly forbid storing text in payload. 
-                # Usually we want text in payload to show results. I will include it.)
                 payload = chunk.copy() 
                 
                 points.append(models.PointStruct(
@@ -111,6 +114,7 @@ def main():
                 print(f"Error upserting batch: {e}")
 
     print(f"Ingestion complete. Total chunks indexed: {total_chunks}")
+    print(f"Target Database: {config.QDRANT_PATH}")
 
 if __name__ == "__main__":
     main()

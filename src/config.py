@@ -3,7 +3,18 @@ import os
 # Paths
 STATS_PATH = "data/stats/global_stats.json"
 POEM_STATS_PATH = "data/stats/poem_stats.json"
-QDRANT_PATH = os.path.join(os.getcwd(), "qdrant_db")
+
+# Qdrant Configuration - Support both Cloud and Local
+QDRANT_URL = os.getenv("QDRANT_URL")
+QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
+
+# Use Qdrant Cloud if credentials provided, otherwise use local
+if QDRANT_URL and QDRANT_API_KEY:
+    QDRANT_PATH = QDRANT_URL  # Cloud URL
+    QDRANT_MODE = "cloud"
+else:
+    QDRANT_PATH = os.path.join(os.getcwd(), "qdrant_db")  # Local path
+    QDRANT_MODE = "local"
 
 # Qdrant / Embeddings
 COLLECTION_NAME = "chandamama_chunks"

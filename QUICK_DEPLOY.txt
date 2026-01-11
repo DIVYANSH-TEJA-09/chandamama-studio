@@ -1,0 +1,45 @@
+# 🚀 Streamlit Cloud Deployment - Quick Start
+
+**Time to deploy**: 2 minutes  
+**Cost**: FREE ✅
+
+---
+
+## 3 Simple Steps
+
+### 1️⃣ Push to GitHub
+```bash
+git add .
+git commit -m "Deploy to Streamlit Cloud"
+git push origin main
+```
+
+### 2️⃣ Deploy
+- Go to: https://streamlit.io/cloud
+- Click: "Deploy an app"
+- Select your repo
+- Main file: `app.py`
+- Click: "Deploy"
+
+### 3️⃣ Add Secrets
+- App Settings → Secrets
+- Paste your `.env` file content
+- Save
+
+**Done!** Your app is live 🎉
+
+---
+
+## Your App URL
+```
+https://chandamama-studio-xxxxx.streamlit.app
+```
+
+---
+
+## Auto-Updates
+Push code → Auto-deploys in 1 minute
+
+---
+
+**Read full guide**: `STREAMLIT_CLOUD_DEPLOY.md`
