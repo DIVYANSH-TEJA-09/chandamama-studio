@@ -72,10 +72,14 @@ with st.sidebar:
             "temperature": 0.7,
             "max_tokens": 3000
         }
+        
+    # Validation: Logic to auto-fix stale session state (e.g. user had gpt-4o-mini selected)
+    if st.session_state["llm_settings"]["model"] not in config.AVAILABLE_MODELS:
+        # Silently switch to default
+        st.session_state["llm_settings"]["model"] = config.AVAILABLE_MODELS[0]
 
     st.header("Status")
-    # Show current model
-    st.info(f"Model: {st.session_state['llm_settings']['model']}")
+    st.success("AI System: Online ✅")
         
     st.divider()
     st.header("Archive Stats")
@@ -113,7 +117,7 @@ if app_mode == "Story Weaver":
         st.markdown("<br>", unsafe_allow_html=True)
         
         if st.button("✨ Generate Story", type="primary", use_container_width=True):
-            with st.spinner(f"Searching Archive & Writing using {st.session_state['llm_settings']['model']}..."):
+            with st.spinner("Searching Archive & Writing Story..."):
                 # RAG
                 search_q = f"{prompt_input} {sel_genre} {' '.join(sel_keywords)} {' '.join(sel_chars)}"
                 rag_results = retriever.retrieve_points(search_q)

@@ -177,7 +177,7 @@ def _call_llm_creative(prompt: str, params: Dict[str, Any] = None) -> str:
         if not params:
             params = {}
             
-        model_id = params.get("model", "gpt-4o-mini")
+        model_id = params.get("model", config.AVAILABLE_MODELS[0])
         temp = params.get("temperature", 0.7)
         max_tok = params.get("max_tokens", 3500)
 
