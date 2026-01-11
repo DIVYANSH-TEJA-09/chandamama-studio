@@ -3,11 +3,23 @@ from typing import List, Tuple, Dict, Any, Set
 from qdrant_client import QdrantClient
 from qdrant_client.http import models
 from . import config
+# Use the main config for mode detection
+from src import config as main_config
 
 class QdrantStorage:
     def __init__(self):
-        print(f"Connecting to Qdrant at {config.QDRANT_PATH}...")
-        self.client = QdrantClient(path=config.QDRANT_PATH)
+        # Check if we are in Cloud mode
+        if getattr(main_config, "QDRANT_MODE", "local") == "cloud":
+            print(f"Connecting to Qdrant Cloud at {main_config.QDRANT_URL}...")
+            self.client = QdrantClient(
+                url=main_config.QDRANT_URL,
+                api_key=main_config.QDRANT_API_KEY
+            )
+        else:
+            # Local Mode
+            print(f"Connecting to Local Qdrant at {config.QDRANT_PATH}...")
+            self.client = QdrantClient(path=config.QDRANT_PATH)
+            
         self.ensure_collection()
 
     def ensure_collection(self):

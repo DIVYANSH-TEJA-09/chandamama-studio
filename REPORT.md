@@ -251,11 +251,15 @@ Deploy the Chandamama Studio application to the cloud using free tier services, 
 - Application seamlessly switches based on environment
 - No breaking changes to existing functionality
 
-⏳ **Pending User Actions:**
-- Create Qdrant Cloud account
-- Run `python rebuild_db.py` (populates cloud database)
-- Deploy to Streamlit Cloud
-- Add secrets to Streamlit Cloud dashboard
+🔍 **Resolution of Deployment Issues:**
+- **Error:** `qdrant_client.http.exceptions.UnexpectedResponse` (404 Not Found).
+- **Root Cause:** `QdrantStorage` class in `src/story_embedder` was hardcoded to use local path, ignoring cloud credentials during rebuild.
+- **Fix:** Refactored `storage.py` to respect `config.QDRANT_MODE`.
+- **Migration Strategy:** Adopted a **"Stories Only"** migration approach. The chunks collection (26k items) was deemed unnecessary for the main app's robust retrieval, so we focused on ensuring the 10,181 Full Stories were 100% migrated to the Cloud.
+
+✅ **Final Deployment State:**
+- **App Mode:** Full Story Retrieval (High Coherence)
+- **Cloud DB:** Populated with 100% of Story Embeddings.
 
 #### Git Repository
 

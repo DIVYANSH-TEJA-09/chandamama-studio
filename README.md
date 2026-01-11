@@ -50,21 +50,27 @@ streamlit run app.py
 - **Online Mode (RAG Enabled)**: Requires `qdrant_db/` folder to exist.
 - **Offline Mode**: If `qdrant_db/` is missing, the app runs in "Creative Mode" (Uses AI knowledge only, no archive context).
 
-## Collaboration (For Teammates)
+## Collaboration & Deployment
 
-**IMPORTANT**: The database (`qdrant_db`) is too large for Git. To set up the full project:
+**Cloud Deployment is Recommended** (Zero Setup):
 
-1. **Pull the Code**: Clone this repository.
-2. **Download Data**: Ensure you have the `chunks/` folder or source JSONs.
-3. **Rebuild the Database**:
-   Run this single command to generate the database locally (takes ~10 mins):
+1. **Qdrant Cloud**: Create a free cluster at [cloud.qdrant.io](https://cloud.qdrant.io).
+2. **Environment**: Update `.env` with:
+   ```bash
+   QDRANT_URL="your-cloud-url"
+   QDRANT_API_KEY="your-api-key"
+   ```
+3. **Populate Data**:
+   Run the rebuild script **locally** to push data to the cloud:
    ```bash
    python rebuild_db.py
+   # Select 'y' when asked to build Story Embeddings
    ```
 4. **Run App**: 
    ```bash
    streamlit run app.py
    ```
+   The app will automatically detect cloud credentials and connect.
 
 ## Project Structure
 - `app.py`: Main Streamlit application.

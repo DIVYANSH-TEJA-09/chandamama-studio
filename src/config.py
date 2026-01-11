@@ -30,11 +30,13 @@ LLM_TEMPERATURE = 0.7
 
 # Council of Storytellers Configuration
 COUNCIL_MODELS = [
+    "gpt-4o-mini",
     "Qwen/Qwen2.5-72B-Instruct",
     "meta-llama/Meta-Llama-3.1-70B-Instruct",
     "google/gemma-2-27b-it",
     "mistralai/Mistral-Nemo-Instruct-2407",
-    "gpt-4o-mini"
+    "llama3-70b-8192", 
+    "mixtral-8x7b-32768"
 ]
 
 # Map models to specific Environment Variable names for their API keys
@@ -44,7 +46,8 @@ MODEL_API_KEY_MAP = {
     "google/gemma-2-27b-it": "HF_TOKEN_GEMMA",
     "mistralai/Mistral-Nemo-Instruct-2407": "HF_TOKEN_MISTRAL",
     "gpt-4o-mini": "OPENAI_API_KEY",
-    "openai/gpt-oss-120b": "GROQ_API_KEY"
+    "llama3-70b-8192": "GROQ_API_KEY",
+    "mixtral-8x7b-32768": "GROQ_API_KEY"
 }
 
 # Story Embeddings (Alibaba GTE)

@@ -2,7 +2,7 @@ import os
 
 from typing import Dict, Any
 
-def generate_story(facets: Dict[str, Any], context_text: str = "") -> str:
+def generate_story(facets: Dict[str, Any], context_text: str = "", llm_params: Dict[str, Any] = None) -> str:
     """
     Generates a NEW, ORIGINAL Telugu story based on user facets and RAG context.
     """
@@ -156,7 +156,7 @@ Label:
     
     # Call isolated LLM function
     try:
-        story_text = _call_llm_creative(prompt)
+        story_text = _call_llm_creative(prompt, llm_params)
     except Exception as e:
         return f"Error generating story: {str(e)}"
 
@@ -166,17 +166,32 @@ Label:
     return final_output
 
 
-def _call_llm_creative(prompt: str) -> str:
+def _call_llm_creative(prompt: str, params: Dict[str, Any] = None) -> str:
     """
-    Calls Local Qwen-72B for creative storytelling.
+    Calls Multi-LLM backend (OpenAI, Groq, HF).
     """
     try:
-        from src.local_llm import generate_response
-        return generate_response(prompt, system_prompt="You are a creative storyteller.", temperature=0.7, max_tokens=3500)
+        from src.local_llm_multi import generate_response_multi, config
+        
+        # Default Params
+        if not params:
+            params = {}
+            
+        model_id = params.get("model", "gpt-4o-mini")
+        temp = params.get("temperature", 0.7)
+        max_tok = params.get("max_tokens", 3500)
+
+        return generate_response_multi(
+            model_id=model_id, 
+            prompt=prompt, 
+            system_prompt="You are a creative storyteller.", 
+            temperature=temp, 
+            max_tokens=max_tok
+        )
     except Exception as e:
         return f"LLM Error: {str(e)}"
 
-def generate_poem(facets: Dict[str, Any]) -> str:
+def generate_poem(facets: Dict[str, Any], llm_params: Dict[str, Any] = None) -> str:
     """
     Generates a Telugu POEM/SONG based on facets.
     """
@@ -210,6 +225,6 @@ Title: <Title>
 (Meaning/Bhavam - Optional but good for children)
 """
     try:
-        return _call_llm_creative(prompt)
+        return _call_llm_creative(prompt, llm_params)
     except Exception as e:
         return f"Error generating poem: {str(e)}"
