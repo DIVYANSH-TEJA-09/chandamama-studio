@@ -9,7 +9,7 @@ load_dotenv()
 
 # Import Modules
 from src.story_gen import generate_story, generate_poem
-from src.retrieval_logics_test.story_embeddings_retrieval import StoryEmbeddingsRetriever
+from src.retrieval.vector_search import StoryEmbeddingsRetriever
 from src import config
 
 # Page Config
