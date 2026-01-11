@@ -68,7 +68,7 @@ with st.sidebar:
     # Initialize Settings in Session State if not present
     if "llm_settings" not in st.session_state:
         st.session_state["llm_settings"] = {
-            "model": "gpt-4o-mini",
+            "model": config.AVAILABLE_MODELS[0],
             "temperature": 0.7,
             "max_tokens": 3000
         }
