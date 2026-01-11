@@ -110,7 +110,7 @@ if app_mode == "Story Weaver":
         st.markdown("<br>", unsafe_allow_html=True)
         
         if st.button("✨ Generate Story", type="primary", use_container_width=True):
-            with st.spinner("Searching Archive & Writing Story..."):
+            with st.spinner("Writing Story..."):
                 # RAG
                 search_q = f"{prompt_input} {sel_genre} {' '.join(sel_keywords)} {' '.join(sel_chars)}"
                 rag_results = retriever.retrieve_points(search_q)
@@ -151,10 +151,6 @@ if app_mode == "Story Weaver":
         if "gen_story" in st.session_state:
             st.markdown(st.session_state["gen_story"])
             st.divider()
-            if "rag_ctx" in st.session_state:
-                with st.expander("📚 Archive Context Used"):
-                    for c in st.session_state["rag_ctx"]:
-                        st.text(c[:300] + "...")
         else:
             st.info("Story output will appear here.")
 
