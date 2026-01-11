@@ -14,3 +14,4 @@ huggingface_hub>=0.20.0
 # einops
 
 groq>=0.4.0
+streamlit-agraph>=0.0.45

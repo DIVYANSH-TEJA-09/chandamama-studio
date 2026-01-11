@@ -262,3 +262,15 @@ Deploy the Chandamama Studio application to the cloud using free tier services, 
 - All code pushed to GitHub successfully (exit code 0)
 - Repository clean and ready for Streamlit Cloud deployment
 - No uncommitted changes
+
+
+### Phase 11: Prompt Playground & A/B Testing
+- **Objective:** Scientifically determine the optimal prompting strategy to elicit "Chandamama-style" output from open-weights models (Qwen 2.5).
+- **Tooling:** Built `src/streamlit_prompt_playground.py`, a dedicated laboratory environment.
+- **Features:**
+    - **Faceted Inputs:** Ingests `global_stats.json` to provide Top 100 Keywords, Characters, and Locations as selectable inputs, ensuring test cases represent real archive distributions.
+    - **6-Way A/B Testing:** Parallely executes 6 distinct prompt strategies (Control, Plot-First, Constraint-Locked, Pure Layout, Two-Pass Hidden, Hybrid).
+    - **Blind Evaluation:** UI hides the underlying prompt templates to focus evaluation purely on the *Output Quality* relative to the *Inputs*.
+    - **Dense Retrieval:** Utilizes `query_points` (Chunk Retrieval) -> `hydrate_stories` pipeline to inject relevant stylistic context into all prompts.
+
+
