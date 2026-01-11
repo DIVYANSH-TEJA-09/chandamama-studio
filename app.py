@@ -81,14 +81,7 @@ with st.sidebar:
     st.header("Status")
     st.success("AI System: Online ✅")
         
-    st.divider()
-    st.header("Archive Stats")
-    if app_mode == "Story Weaver":
-        st.markdown(f"**Total Stories:** {global_stats.get('total_stories', 'Unknown')}")
-        st.markdown(f"**Unique Characters:** {len(global_stats.get('top_characters', []))}")
-    elif app_mode == "Poem Weaver":
-        st.markdown(f"**Total Poems:** {poem_stats.get('total_poems', 0)}")
-        st.markdown(f"**Poem Keywords:** {len(poem_stats.get('top_keywords', []))}")
+
 
 # --- STORY WEAVER ---
 if app_mode == "Story Weaver":
