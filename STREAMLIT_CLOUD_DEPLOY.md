@@ -66,6 +66,8 @@ Since your `.env` is in `.gitignore`, you need to add secrets to Streamlit Cloud
    GEMINI_API_KEY = your_gemini_api_key_here
    HF_TOKEN = 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
    GROQ_API_KEY = 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
+   QDRANT_URL = https://your-cluster-url.qdr.cloud
+   QDRANT_API_KEY = your_api_key_here
    ```
 4. Save → App reloads with your secrets
 
