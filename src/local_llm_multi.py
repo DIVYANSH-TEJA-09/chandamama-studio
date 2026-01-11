@@ -93,8 +93,10 @@ def generate_response_multi(
                     stream=True
                 )
                 for chunk in response_stream:
-                    if chunk.choices[0].delta.content:
-                        yield chunk.choices[0].delta.content
+                    if chunk.choices and len(chunk.choices) > 0:
+                        delta = chunk.choices[0].delta
+                        if delta.content:
+                            yield delta.content
             # Non-Streaming Mode
             else:
                 response = client.chat.completions.create(
