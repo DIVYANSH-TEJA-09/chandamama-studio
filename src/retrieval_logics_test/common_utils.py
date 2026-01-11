@@ -4,11 +4,11 @@ import uuid
 from qdrant_client import QdrantClient
 from sentence_transformers import SentenceTransformer
 
-# Add src to path to import config if needed, though we are redefining some here for isolation
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-# Configuration matching the main app
-from src import config
+# Common Utils
+try:
+    from src import config
+except ImportError:
+    import config
 
 _client_instance = None
 _model_instance = None
