@@ -1,4 +1,5 @@
 import os
+import time
 
 from typing import Dict, Any
 
@@ -13,6 +14,10 @@ def generate_story(facets: Dict[str, Any], context_text: str = "", llm_params: D
     chars = facets.get("characters", [])
     locations = facets.get("locations", [])
     
+    # New facets
+    content_type = facets.get("content_type", "SINGLE")
+    num_chapters = facets.get("num_chapters", 1)
+
     # Format lists for prompt
     keywords_str = ", ".join(keywords) if keywords else "None"
     chars_str = ", ".join(chars) if chars else "Generic Characters"
@@ -21,8 +26,101 @@ def generate_story(facets: Dict[str, Any], context_text: str = "", llm_params: D
     # User's custom prompt
     custom_instruction = facets.get("prompt_input", "").strip()
     
-    # Construct strictly formatted prompt
-    prompt = f"""
+    if content_type == "SERIAL":
+        prompt = f"""
+You are a master Telugu storyteller (Katha Rachayita) specializing in SERIAL STORIES (ధారావాహికలు).
+
+Your task is to write a MULTI-CHAPTER SERIAL STORY in Telugu based on the user's request.
+
+==================================================
+CONFIG
+==================================================
+Genre: {genre}
+Number of Chapters to Generate: {num_chapters}
+Keywords: {keywords_str}
+Characters: {chars_str}
+Locations: {locations_str}
+User Plot Idea: {custom_instruction if custom_instruction else "Create a gripping serial story."}
+
+==================================================
+SERIAL STORY RULES (STRICT)
+==================================================
+1. You MUST generate EXACTLY {num_chapters} chapters in this single response.
+2. Label each chapter clearly as:
+   ## అధ్యాయం 1: [Chapter Title]
+   [Story Content...]
+   
+   ## అధ్యాయం 2: [Chapter Title]
+   [Story Content...]
+   
+   (and so on...)
+
+3. CONTINUITY: 
+   - The story MUST be continuous. Chapter 2 must start exactly where Chapter 1 ended.
+   - Do NOT restart the story in each chapter.
+   - if too many characters are given introduce them slowly over the chapters but maintain logic over the stories.
+   - squeeze the full dramatic potential of its premise.
+   - No Rushed execution. 
+   - All chapters need not have same token count. count may vary based on the story.
+   -Each chapter must justify the existence of the next chapter.
+   - Maintain consistent characters and setting throughout.
+   -Each chapter must increase at least one of these: stakes, risk, moral cost, emotional pressure
+   -If a chapter only: travels, explains, reveals without resistance then it must introduce a new problem by the end.
+   -Concrete enforcement: Any test / puzzle / challenge must: fail once OR cost something (time, safety, trust, emotion)
+   -❌ No instant success
+   -❌ No back-to-back victories
+   -Every major action must leave a residue.
+   -Show the value through action, not explanation.
+   -Enforce: Characters act according to values, Narrator does not explain the lesson directly
+   -❌ Avoid:“ఈ కథ మనకు నేర్పింది…” or “అలా ధర్మం గెలిచింది…”
+
+4. CLIFFHANGERS & CONCLUSION (CRITICALLY IMPORTANT):
+   - Chapters 1 to {num_chapters - 1}: MUST end with a SUSPENSE HOOK or CLIFFHANGER. The reader must feel "What happens next?"
+   - FINAL CHAPTER (Chapter {num_chapters}): MUST RESOLVE everything.
+     - PROHIBITED: Do NOT end the last chapter with a cliffhanger.
+     - REQUIRED: Tie up all loose ends. Solve the mystery. complete the character arcs.
+     - It must feel like a satisfying CONCLUSION to the serial.
+
+5. STYLE:
+   - Use classical/magazine style Telugu (Chandamama style).
+   - Descriptive, engaging, and emotional.
+   - Avoid English words.
+
+6. Before finalizing each chapter, ask internally:
+
+“What is still unresolved?”
+
+“Why must the reader continue?”
+
+“What did this chapter cost the characters?”
+
+==================================================
+ARCHIVE CONTEXT (STYLE SOURCES)
+==================================================
+Use these only for style inspiration:
+{context_text}
+
+==================================================
+OUTPUT FORMAT
+==================================================
+Title: [Serial Title - Big and Catchy]
+
+## అధ్యాయం 1: [Title]
+[Content...]
+
+## అధ్యాయం 2: [Title]
+[Content...]
+
+...
+
+(Moral is optional for serials, but if applicable, add at the very end).
+
+Label:
+ఈ ధారావాహిక కథ కొత్తగా రూపొందించబడింది (AI Generated Serial).
+"""
+    else:
+        # SINGLE STORY PROMPT (Legacy)
+        prompt = f"""
 You are a classic Telugu storyteller.
 
 Your task is to write an ORIGINAL Telugu children’s story that strictly follows
@@ -154,21 +252,32 @@ Label:
 """
 
     
-    # Call isolated LLM function
+    # Call isolated LLM function with streaming
     try:
-        story_text = _call_llm_creative(prompt)
+        stream = _call_llm_creative(prompt, llm_params)
+        
+        full_text = ""
+        for chunk in stream:
+            full_text += chunk
+            yield chunk
+            time.sleep(0.02) # Slower streaming speed
+            
+        # Append Mandatory Label
+        if content_type == "SERIAL":
+             if "AI Generated Serial" not in full_text:
+                  label = "\n\n(ఈ ధారావాహిక కథ కొత్తగా రూపొందించబడింది - AI Generated Serial)"
+                  yield label
+        else:
+            label = "\n\n(ఈ కథ కొత్తగా రూపొందించబడింది - AI Generated)"
+            yield label
+
     except Exception as e:
-        return f"Error generating story: {str(e)}"
-
-    # Append Mandatory Label
-    final_output = f"{story_text}\n\n(ఈ కథ కొత్తగా రూపొందించబడింది - AI Generated)"
-    
-    return final_output
+        yield f"Error generating story: {str(e)}"
 
 
-def _call_llm_creative(prompt: str, params: Dict[str, Any] = None) -> str:
+def _call_llm_creative(prompt: str, params: Dict[str, Any] = None):
     """
-    Calls Multi-LLM backend (OpenAI, Groq, HF).
+    Calls Multi-LLM backend (OpenAI, Groq, HF) with streaming.
     """
     try:
         from src.local_llm_multi import generate_response_multi, config
@@ -186,7 +295,8 @@ def _call_llm_creative(prompt: str, params: Dict[str, Any] = None) -> str:
             prompt=prompt, 
             system_prompt="You are a creative storyteller.", 
             temperature=temp, 
-            max_tokens=max_tok
+            max_tokens=max_tok,
+            stream=True
         )
     except Exception as e:
         return f"LLM Error: {str(e)}"
@@ -225,6 +335,10 @@ Title: <Title>
 (Meaning/Bhavam - Optional but good for children)
 """
     try:
-        return _call_llm_creative(prompt, llm_params)
+        # Pass params correctly
+        stream = _call_llm_creative(prompt, llm_params)
+        for chunk in stream:
+            yield chunk
+            time.sleep(0.02) # Slower streaming speed
     except Exception as e:
-        return f"Error generating poem: {str(e)}"
+        yield f"Error generating poem: {str(e)}"

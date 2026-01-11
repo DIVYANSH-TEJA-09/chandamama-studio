@@ -65,10 +65,13 @@ def generate_response_multi(
     prompt: str, 
     system_prompt: Optional[str] = None, 
     max_tokens: int = config.LLM_MAX_TOKENS,
-    temperature: float = config.LLM_TEMPERATURE
-) -> str:
+    temperature: float = config.LLM_TEMPERATURE,
+    stream: bool = False
+):
     """
     Generates response using the specified model.
+    If stream=True, returns a generator yielding chunks of text.
+    Otherwise, returns the full string.
     """
     try:
         client_type, client = get_client(model_id)
@@ -78,41 +81,60 @@ def generate_response_multi(
             messages.append({"role": "system", "content": system_prompt})
         messages.append({"role": "user", "content": prompt})
         
-        # OPENAI
-        if client_type == "openai":
-            response = client.chat.completions.create(
-                model=model_id,
-                messages=messages,
-                max_tokens=max_tokens,
-                temperature=temperature,
-                frequency_penalty=0.5 
-            )
-            return response.choices[0].message.content
-            
-        # GROQ
-        elif client_type == "groq":
-            response = client.chat.completions.create(
-                model=model_id,
-                messages=messages,
-                max_tokens=max_tokens,
-                temperature=temperature,
-                # top_p=1, # Default
-                # stream=False # Default
-            )
-            return response.choices[0].message.content or ""
+        # OPENAI & GROQ (Compatible APIs)
+        if client_type in ["openai", "groq"]:
+            # Streaming Mode
+            if stream:
+                response_stream = client.chat.completions.create(
+                    model=model_id,
+                    messages=messages,
+                    max_tokens=max_tokens,
+                    temperature=temperature,
+                    stream=True
+                )
+                for chunk in response_stream:
+                    if chunk.choices[0].delta.content:
+                        yield chunk.choices[0].delta.content
+            # Non-Streaming Mode
+            else:
+                response = client.chat.completions.create(
+                    model=model_id,
+                    messages=messages,
+                    max_tokens=max_tokens,
+                    temperature=temperature,
+                    stream=False
+                )
+                return response.choices[0].message.content or ""
 
         # HUGGING FACE
         elif client_type == "hf":
-            response = client.chat_completion(
-                messages,
-                max_tokens=max_tokens,
-                temperature=temperature,
-                top_p=0.9,
-                frequency_penalty=0.5
-            )
-            if response.choices and response.choices[0].message.content:
-                return response.choices[0].message.content
-            return ""
+            # Streaming Mode
+            if stream:
+                response_stream = client.chat_completion(
+                    messages,
+                    max_tokens=max_tokens,
+                    temperature=temperature,
+                    top_p=0.9,
+                    stream=True
+                )
+                for chunk in response_stream:
+                    if chunk.choices and chunk.choices[0].delta.content:
+                        yield chunk.choices[0].delta.content
+            # Non-Streaming Mode
+            else:
+                response = client.chat_completion(
+                    messages,
+                    max_tokens=max_tokens,
+                    temperature=temperature,
+                    top_p=0.9,
+                    stream=False
+                )
+                if response.choices and response.choices[0].message.content:
+                    return response.choices[0].message.content
+                return ""
             
     except Exception as e:
-        return f"Error ({model_id}): {str(e)}"
+        if stream:
+             yield f"Error ({model_id}): {str(e)}"
+        else:
+             return f"Error ({model_id}): {str(e)}"

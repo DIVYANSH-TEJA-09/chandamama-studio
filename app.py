@@ -51,19 +51,18 @@ def get_keys(stats_dict, key_name):
         return list(data.keys())
     return []
 
-# Helper: Safe Key Access
-def get_keys(stats_dict, key_name):
-    data = stats_dict.get(key_name, {})
-    if isinstance(data, dict):
-        return list(data.keys())
-    return []
+
 
 # Sidebar Navigation
 with st.sidebar:
     st.title("🌙 Classic Telugu Studio")
-    app_mode = st.radio("Choose Mode", ["Story Weaver", "Poem Weaver", "Settings"])
+    # Sidebar - Mode Selection
+    st.sidebar.title("Telugu Studio")
+    app_mode = st.sidebar.radio("Choose Mode", ["Story Weaver", "Serial Weaver", "Poem Weaver", "Settings"])
     
-    st.divider()
+    # Global Sidebar Stats (Optional)
+    st.sidebar.markdown("---")
+    st.sidebar.caption(f"📚 Total Stories: {global_stats['total_stories']}")
     
     # Initialize Settings in Session State if not present
     if "llm_settings" not in st.session_state:
@@ -72,6 +71,14 @@ with st.sidebar:
             "temperature": 0.7,
             "max_tokens": 3000
         }
+    
+    if "serial_settings" not in st.session_state:
+        st.session_state["serial_settings"] = {
+             "max_tokens": 6000,
+             "temperature": 0.75
+        }
+    
+
         
     # Validation: Logic to auto-fix stale session state (e.g. user had gpt-4o-mini selected)
     if st.session_state["llm_settings"]["model"] not in config.AVAILABLE_MODELS:
@@ -136,23 +143,119 @@ if app_mode == "Story Weaver":
                     "prompt_input": prompt_input,
                     "keywords": sel_keywords,
                     "characters": sel_chars,
-                    "locations": sel_locs
+                    "locations": sel_locs,
+                    "content_type": "SINGLE"
                 }
-                
-                # Using configured settings
-                story_out = generate_story(facets, context_text, llm_params=st.session_state["llm_settings"])
-                
-                st.session_state["gen_story"] = story_out
-                st.session_state["rag_ctx"] = context_story_excerpts
 
-    with col_preview:
-        st.subheader("2. Output")
-        st.markdown("---")
-        if "gen_story" in st.session_state:
-            st.markdown(st.session_state["gen_story"])
-            st.divider()
-        else:
-            st.info("Story output will appear here.")
+                # Using configured settings
+                # story_out is now a Generator
+                story_generator = generate_story(facets, context_text, llm_params=st.session_state["llm_settings"])
+                
+                with col_preview:
+                    st.subheader("2. Output")
+                    st.markdown("---")
+                    # STREAMING OUTPUT
+                    full_response = st.write_stream(story_generator)
+                    st.divider()
+                    
+                    # Persist final result
+                    st.session_state["gen_story"] = full_response
+                    st.session_state["rag_ctx"] = context_story_excerpts
+
+
+
+elif app_mode == "Serial Weaver":
+    st.title("📚 Serial Weaver (ధారావాహిక)")
+    st.caption("Generate continuous multi-chapter serial stories with cliffhangers!")
+
+    # Use settings from session state
+    ser_max_tokens = st.session_state["serial_settings"]["max_tokens"]
+    ser_temp = st.session_state["serial_settings"]["temperature"]
+        
+    serial_llm_settings = st.session_state["llm_settings"].copy()
+    serial_llm_settings["max_tokens"] = ser_max_tokens
+    serial_llm_settings["temperature"] = ser_temp
+    # ---------------------------------------------------------
+
+    col_ctrl, col_preview = st.columns([1, 1], gap="large")
+
+    with col_ctrl:
+        st.subheader("1. Design Serial")
+
+        prompt_input = st.text_area("Serial Plot Idea", height=100, placeholder="e.g. A treasure hunt across ancient kingdoms...")
+        
+        genres = ["Folklore", "Fantasy", "Mystery", "Adventure", "Mythology", "Historical Fiction", "Family Drama"]
+        sel_genre = st.selectbox("Genre", genres, index=3) # Default Adventure
+
+        # Chapter Slider
+        num_chapters = st.slider("Number of Chapters", min_value=2, max_value=5, value=3)
+
+        all_keywords = get_keys(global_stats, "top_keywords")
+        sel_keywords = st.multiselect("Keywords", all_keywords[:100], key="ser_key")
+        
+        all_chars = get_keys(global_stats, "top_characters")
+        sel_chars = st.multiselect("Characters", all_chars[:100], key="ser_char")
+        
+        all_locs = get_keys(global_stats, "top_locations")
+        sel_locs = st.multiselect("Locations", all_locs[:100], key="ser_loc")
+
+        st.markdown("<br>", unsafe_allow_html=True)
+
+        serial_gen_clicked = st.button("✨ Start Serial", type="primary", use_container_width=True)
+        if serial_gen_clicked:
+            with st.spinner("Weaving Serial Story... (This may take a while)"):
+                 # RAG Logic (Same as Story, but biased if possible - implicitly via prompt)
+                search_q = f"Serial Story {prompt_input} {sel_genre} {' '.join(sel_keywords)}"
+                rag_results = retriever.retrieve_points(search_q)
+                
+                context_story_excerpts = []
+                full_texts = []
+                for p in rag_results:
+                    title = p.payload.get('title', 'Unknown')
+                    text = p.payload.get('text', '')
+                    context_story_excerpts.append(f"### {title}\n{text[:200]}...")
+                    full_texts.append(f"Title: {title}\nStory: {text}")
+
+                context_text = "\\n\\n".join(full_texts)
+
+                facets = {
+                    "genre": sel_genre,
+                    "prompt_input": prompt_input,
+                    "keywords": sel_keywords,
+                    "characters": sel_chars,
+                    "locations": sel_locs,
+                    "content_type": "SERIAL",
+                    "num_chapters": num_chapters
+                }
+
+                # Use Serial Settings
+                # story_out is now a Generator
+                story_generator = generate_story(facets, context_text, llm_params=serial_llm_settings)
+                
+                with col_preview:
+                     st.subheader("2. Your Serial")
+                     st.markdown("---")
+                     # STREAMING OUTPUT
+                     full_serial = st.write_stream(story_generator)
+                     st.divider()
+                     
+                     st.session_state["gen_serial"] = full_serial
+                     st.session_state["rag_ctx_serial"] = context_story_excerpts
+                     
+                     st.download_button("Download Serial", full_serial, file_name="serial_story.txt")
+    
+    if not serial_gen_clicked:
+        with col_preview:
+            st.subheader("2. Your Serial")
+            if "gen_serial" in st.session_state and st.session_state["gen_serial"]:
+                 st.markdown(st.session_state["gen_serial"])
+                 st.divider()
+                 st.download_button("Download Serial", st.session_state["gen_serial"], file_name="serial_story.txt")
+            else:
+                 st.info("Design your serial and click correct 'Start Serial'!")
+
+
+
 
 # --- POEM WEAVER ---
 elif app_mode == "Poem Weaver":
@@ -170,7 +273,8 @@ elif app_mode == "Poem Weaver":
         poem_keywords = get_keys(poem_stats, "top_keywords")
         sel_p_keywords = st.multiselect("Themes / Keywords", poem_keywords[:50], placeholder="Select nature themes...")
         
-        if st.button("🎶 Compose Poem", type="primary", use_container_width=True):
+        poem_clicked = st.button("🎶 Compose Poem", type="primary", use_container_width=True)
+        if poem_clicked:
             with st.spinner("Composing... (This may take time)..."):
                     facets = {
                         "style": sel_style,
@@ -178,16 +282,22 @@ elif app_mode == "Poem Weaver":
                         "theme": ", ".join(sel_p_keywords) if sel_p_keywords else "Nature/Moral"
                     }
                     # Using configured settings
-                    poem_out = generate_poem(facets, llm_params=st.session_state["llm_settings"])
-                    st.session_state["gen_poem"] = poem_out
+                    poem_generator = generate_poem(facets, llm_params=st.session_state["llm_settings"])
+                    
+                    with col_p2:
+                         st.subheader("2. Output")
+                         st.markdown("---")
+                         full_poem = st.write_stream(poem_generator)
+                         st.session_state["gen_poem"] = full_poem
 
-    with col_p2:
-        st.subheader("2. Output")
-        st.markdown("---")
-        if "gen_poem" in st.session_state:
-            st.markdown(st.session_state["gen_poem"])
-        else:
-            st.info("Poem output will appear here.")
+    if not poem_clicked:
+        with col_p2:
+            st.subheader("2. Output")
+            st.markdown("---")
+            if "gen_poem" in st.session_state:
+                st.markdown(st.session_state["gen_poem"])
+            else:
+                st.info("Poem output will appear here.")
 
 # --- SETTINGS ---
 elif app_mode == "Settings":
@@ -231,4 +341,17 @@ elif app_mode == "Settings":
         st.session_state["llm_settings"]["max_tokens"] = sel_max
         
     st.divider()
+    st.divider()
+    
+    st.subheader("Serial Story Settings")
+    st.caption("Specific settings for multi-chapter serials.")
+
+    ser_tokens = st.slider("Serial Max Tokens", 2000, 12000, st.session_state["serial_settings"]["max_tokens"], step=500, key="set_ser_tok")
+    ser_temp_val = st.slider("Serial Connectivity", 0.0, 1.0, st.session_state["serial_settings"]["temperature"], key="set_ser_temp")
+
+    if st.button("Save Serial Settings"):
+         st.session_state["serial_settings"]["max_tokens"] = ser_tokens
+         st.session_state["serial_settings"]["temperature"] = ser_temp_val
+         st.success("Serial settings updated!")
+         
     st.info("Settings are automatically saved for this session.")

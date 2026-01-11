@@ -45,7 +45,7 @@ class StoryEmbeddingsRetriever:
 
         context_parts = []
 
-        context_parts = []
+
         for i, hit in enumerate(search_results):
             payload = hit.payload
             
