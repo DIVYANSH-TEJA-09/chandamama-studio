@@ -1,0 +1,35 @@
+[project]
+name = "chandamama-studio"
+version = "0.1.0"
+description = "A Streamlit application for story generation using RAG and vector databases."
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "AGPL-3.0-only"}
+authors = [
+    {name = "User", email = "user@example.com"},
+]
+dependencies = [
+    "streamlit>=1.32.0",
+    "openai>=1.12.0",
+    "qdrant-client>=1.6.0",
+    "sentence-transformers>=3.0.0",
+    "python-dotenv>=1.0.1",
+    "tqdm>=4.66.0",
+    "numpy",
+    "transformers>=4.42.0",
+    "huggingface_hub>=0.20.0",
+    "groq>=0.4.0",
+    "streamlit-agraph>=0.0.45",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.ruff]
+line-length = 120
+indent-width = 4
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
