@@ -4,10 +4,17 @@ An AI-powered application to explore, search, and "weave" new stories inspired b
 
 ## Features
 - **📖 Story Weaver**: Generate *new* stories in strict classic style, grounded in actual archive content (RAG).
-- **🏛️ The Council**: Evaluate story quality across 5 top LLMs (GPT-4o, Qwen 2.5, Llama 3.1, etc.).
+- **📚 Serial Story Weaver (ధారావాహికలు)**: Generate multi-chapter serial stories with cliffhangers and continuity.
 - **🪕 Poem Weaver**: Compose new Telugu poems and songs based on archive themes.
 - **🔍 RAG Search**: Semantically search full stories using `Alibaba-NLP/gte-multilingual-base` (8k context).
 - **📊 Analytics**: View stats on 10,000+ stories (Authors, Characters, Locations).
+
+## 🧪 Experiments & Research
+This project includes a dedicated `experiments/` modules for testing advanced concepts:
+- **The Council of Storytellers**: Comparing 5 LLMs on creative writing tasks.
+- **Retrieval Logic Tests**: Comparing "Full Story" vs "Chunk-based" vs "Hybrid" RAG.
+- **Knowledge Graph**: Visualizing story connections using `experiments/streamlit_graph.py`.
+- **Local LLM**: Testing local inference capabilities.
 
 ## 🧠 System Architecture (RAG Flow)
 

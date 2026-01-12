@@ -43,6 +43,7 @@ Run the master rebuild script. It handles both **Chunk Indexing** (for RAG) and 
 
 ```bash
 python rebuild_db.py
+# This is the "One Script to Rule Them All" - it sets up everything you need!
 ```
 
 **Workflow:**
@@ -68,6 +69,29 @@ python rebuild_db.py
 - **Python**: Use clear variable names.
 - **Streamlit**: Keep UI logic inside `app.py` or separate UI modules.
 - **Secrets**: NEVER commit `.env` or API keys.
+
+## 🧪 How to Test Locally
+
+Before submitting a PR, please test your changes:
+
+### 1. Test the Story Weaver
+1. Run `streamlit run app.py`
+2. Go to **Story Weaver** mode.
+3. Generate a **Single Story** (Normal Mode).
+4. Generate a **Serial Story** (Select "Serial" in Content Type).
+   - Ensure it generates multiple chapters and maintains continuity.
+
+### 2. Test Experiments (If applicable)
+If you are working on experimental features:
+1. Run the specific experiment script:
+   ```bash
+   streamlit run experiments/streamlit_graph.py
+   ```
+2. Verify that the experimental UI loads without errors.
+
+### 3. Verify Database
+- Ensure `rebuild_db.py` runs without crashing.
+- Check if `qdrant_db/` folder is populated.
 
 ## 📝 Submitting Changes
 
