@@ -33,3 +33,6 @@ target-version = "py311"
 
 [tool.ruff.lint]
 select = ["E", "F", "I"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
