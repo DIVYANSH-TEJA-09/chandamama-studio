@@ -41,7 +41,7 @@ pip install -r requirements.txt
 
 ### 3. Environment Variables
 1. Copy `.env.template` to `.env`.
-2. Add your `OPENAI_API_KEY`.
+2. Add your `OPENAI_API_KEY` and `GROQ_API_KEY`.
 ```bash
 cp .env.template .env
 ```
