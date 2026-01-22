@@ -2,7 +2,7 @@
 
 ## 1. Project Objective
 The goal was to modernize the access and creativity around the **Chandamama** magazine archive (1947–2012), a cultural treasure of Telugu children's literature. 
-**Key Challenge:** The archive consisted of thousands of scanned PDFs and disparate JSON files with inconsistent metadata. The objective was to create an AI-powered "Story Weaver" that could generate *new* stories grounded in the archive's specific style and tone.
+**Key Challenge:** The archive consisted of thousands of scanned PDFs and disparate JSON files with inconsistent metadata. The objective was to create an AI-powered "Story Generator" that could generate *new* stories grounded in the archive's specific style and tone.
 
 ## 2. Methodology & Journey
 
@@ -22,17 +22,17 @@ The goal was to modernize the access and creativity around the **Chandamama** ma
     - **Outcome:** The AI now sees actual excerpts (e.g., "Tenali Rama's wit") before writing, ensuring stylistic consistency.
 
 ### Phase 3: UI/UX Revamp (Streamlit)
-- **Evolution:** Moved from a basic Search/RAG tabs interface to a unified "Story Weaver" dashboard.
+- **Evolution:** Moved from a basic Search/RAG tabs interface to a unified "Story Generator" dashboard.
 - **Faceted Search:** 
     - Replaced open text inputs with **Multi-select widgets** powered by `global_stats.json`.
     - Allowed users to mix-and-match: "Folklore" + "Magic" + "Forest".
 - **Result:** A "No-Code" creativity tool where users guide the AI without needing complex prompting skills.
 
-### Phase 4: Poem Weaver (New Feature)
+### Phase 4: Poem Generator (New Feature)
 - **Insight:** The archive contains 60+ poems and songs that were underutilized.
 - **Action:** 
     - Created a dedicated stats aggregation for poems (`stats/poem_stats.json`).
-    - Built a specialized "Poem Weaver" mode in the UI.
+    - Built a specialized "Poem Generator" mode in the UI.
     - Prompt Engineering: Tuned the AI to generate "Padyam" (Metric) and "Paata" (Song) styles specific to Telugu literature.
 
 ## 3. Technical Architecture

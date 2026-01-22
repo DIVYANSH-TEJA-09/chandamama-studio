@@ -58,7 +58,7 @@ with st.sidebar:
     st.title("🌙 Classic Telugu Studio")
     # Sidebar - Mode Selection
     st.sidebar.title("Telugu Studio")
-    app_mode = st.sidebar.radio("Choose Mode", ["Story Weaver", "Serial Weaver", "Poem Weaver", "Settings"])
+    app_mode = st.sidebar.radio("Choose Mode", ["Story Generator", "Serial Generator", "Poem Generator", "Settings"])
     
     # Global Sidebar Stats (Optional)
     st.sidebar.markdown("---")
@@ -90,10 +90,10 @@ with st.sidebar:
         
 
 
-# --- STORY WEAVER ---
-if app_mode == "Story Weaver":
-    st.title("📖 Story Weaver")
-    st.caption("Weave new stories grounded in Classic Telugu Literature.")
+# --- STORY GENERATOR ---
+if app_mode == "Story Generator":
+    st.title("📖 Story Generator")
+    st.caption("Generate new stories grounded in Classic Telugu Literature.")
 
     col_ctrl, col_preview = st.columns([1, 1], gap="large")
 
@@ -164,8 +164,8 @@ if app_mode == "Story Weaver":
 
 
 
-elif app_mode == "Serial Weaver":
-    st.title("📚 Serial Weaver (ధారావాహిక)")
+elif app_mode == "Serial Generator":
+    st.title("📚 Serial Generator (ధారావాహిక)")
     st.caption("Generate continuous multi-chapter serial stories with cliffhangers!")
 
     # Use settings from session state
@@ -203,7 +203,7 @@ elif app_mode == "Serial Weaver":
 
         serial_gen_clicked = st.button("✨ Start Serial", type="primary", use_container_width=True)
         if serial_gen_clicked:
-            with st.spinner("Weaving Serial Story... (This may take a while)"):
+            with st.spinner("Generating Serial Story... (This may take a while)"):
                  # RAG Logic (Same as Story, but biased if possible - implicitly via prompt)
                 search_q = f"Serial Story {prompt_input} {sel_genre} {' '.join(sel_keywords)}"
                 rag_results = retriever.retrieve_points(search_q)
@@ -257,9 +257,9 @@ elif app_mode == "Serial Weaver":
 
 
 
-# --- POEM WEAVER ---
-elif app_mode == "Poem Weaver":
-    st.title("🪕 Poem Weaver")
+# --- POEM GENERATOR ---
+elif app_mode == "Poem Generator":
+    st.title("🪕 Poem Generator")
     st.caption("Compose lyrical Telugu poems and songs.")
     
     col_p1, col_p2 = st.columns([1, 1], gap="large")

@@ -3,9 +3,9 @@
 An AI-powered application to explore, search, and "weave" new stories inspired by Classic Telugu Literature.
 
 ## Features
-- **📖 Story Weaver**: Generate *new* stories in strict classic style, grounded in actual archive content (RAG).
-- **📚 Serial Story Weaver (ధారావాహికలు)**: Generate multi-chapter serial stories with cliffhangers and continuity.
-- **🪕 Poem Weaver**: Compose new Telugu poems and songs based on archive themes.
+- **📖 Story Generator**: Generate *new* stories in strict classic style, grounded in actual archive content (RAG).
+- **📚 Serial Generator (ధారావాహికలు)**: Generate multi-chapter serial stories with cliffhangers and continuity.
+- **🪕 Poem Generator**: Compose new Telugu poems and songs based on archive themes.
 - **🔍 RAG Search**: Semantically search full stories using `Alibaba-NLP/gte-multilingual-base` (8k context).
 - **📊 Analytics**: View stats on 10,000+ stories (Authors, Characters, Locations).
 
