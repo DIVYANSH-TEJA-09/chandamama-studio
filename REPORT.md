@@ -282,23 +282,30 @@ Deploy the Chandamama Studio application to the cloud using free tier services, 
 ### 1. Objective
 To maximize user engagement by turning passive reading into active participation. The feature aims to generate a *new*, bespoke Chandamama story and then assume the role of a "Puzzle Master" to generate a solvable crossword puzzle based *strictly* on that story's content.
 
-### 2. Architecture & Flow
-The system follows a linear generative pipeline:
+### 2. Architecture & Flow (Puzzle System)
 
-1.  **Story Generation Layer**:
-    -   **Input**: User facets (Genre, Keywords) or custom ideas.
-    -   **Core**: A "Hybrid Mini-Serial" prompt that generates a 3-act narrative with high tension and logical resolution.
-    -   **Output**: A cohesive Telugu short story (approx. 500-700 words).
-
-2.  **Extraction Layer**:
-    -   **Process**: An LLM extracts 20-25 key terms (Proper Nouns, Verbs, Objects) from the generated story.
-    -   **Conditioning**: Generates cryptic clues in Telugu simultaneously.
-    -   **Fallback**: Implements Regex-based parsing to recover data even if the LLM output is truncated or malformed.
-
-3.  **Layout Generation Layer (The "Packer")**:
-    -   **Input**: List of Telugu words.
-    -   **Algorithm**: A custom 2-Phase Clustering & Bin Packing algorithm (detailed below).
-    -   **Output**: A concise 2D grid structure mapping (x,y) coordinates to characters.
+```mermaid
+graph TD
+    User([User Inputs]) -->|Genre, Keywords| HybridPrompt["Hybrid 'Mini-Serial' Prompt"]
+    HybridPrompt -->|Generate| Story["Telugu Story (3 Acts)"]
+    
+    subgraph "Extraction Pipeline"
+    Story --> Extractor["LLM Term Encoder"]
+    Extractor -->|Conditioning| JSON["Key Terms + Clues (JSON)"]
+    end
+    
+    subgraph "Layout Engine (Python)"
+    JSON -->|Tokenize| Aksharas["Telugu Aksharas"]
+    Aksharas -->|Phase 1| Clusters["Greedy Isomorphic Clusters"]
+    Clusters -->|Phase 2| Pack["Bin Packer (Spiral & Rotation)"]
+    Pack -->|Optimize| Grid["Contextual 2D Grid"]
+    end
+    
+    Grid -->|Render| UI["Interactive Streamlit UI"]
+    
+    style HybridPrompt fill:#f9f,stroke:#333
+    style Grid fill:#bbf,stroke:#333
+```
 
 ### 3. Key Technical Innovations
 
