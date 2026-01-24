@@ -277,4 +277,55 @@ Deploy the Chandamama Studio application to the cloud using free tier services, 
     - **Blind Evaluation:** UI hides the underlying prompt templates to focus evaluation purely on the *Output Quality* relative to the *Inputs*.
     - **Dense Retrieval:** Utilizes `query_points` (Chunk Retrieval) -> `hydrate_stories` pipeline to inject relevant stylistic context into all prompts.
 
+## Phase 12: Story-Inspired Puzzles
 
+### 1. Objective
+To maximize user engagement by turning passive reading into active participation. The feature aims to generate a *new*, bespoke Chandamama story and then assume the role of a "Puzzle Master" to generate a solvable crossword puzzle based *strictly* on that story's content.
+
+### 2. Architecture & Flow
+The system follows a linear generative pipeline:
+
+1.  **Story Generation Layer**:
+    -   **Input**: User facets (Genre, Keywords) or custom ideas.
+    -   **Core**: A "Hybrid Mini-Serial" prompt that generates a 3-act narrative with high tension and logical resolution.
+    -   **Output**: A cohesive Telugu short story (approx. 500-700 words).
+
+2.  **Extraction Layer**:
+    -   **Process**: An LLM extracts 20-25 key terms (Proper Nouns, Verbs, Objects) from the generated story.
+    -   **Conditioning**: Generates cryptic clues in Telugu simultaneously.
+    -   **Fallback**: Implements Regex-based parsing to recover data even if the LLM output is truncated or malformed.
+
+3.  **Layout Generation Layer (The "Packer")**:
+    -   **Input**: List of Telugu words.
+    -   **Algorithm**: A custom 2-Phase Clustering & Bin Packing algorithm (detailed below).
+    -   **Output**: A concise 2D grid structure mapping (x,y) coordinates to characters.
+
+### 3. Key Technical Innovations
+
+#### 3.1. The Hybrid "Mini-Serial" Prompt
+Standard story prompts often yield generic or unfinished stories. To address this, we engineered a specific **Hybrid Prompt** that combines the depth of a serial novel with the closure of a short story.
+
+*   **Structure**: Enforces a strict 3-Act structure (Hook, Struggle, Resolution).
+*   **Tension Control**: Mandates a "High-Tension Reveal" in Act 1 that *must* be resolved using logic in Act 3.
+*   **Safety Rails**: Explicitly forbids "Deus Ex Machina" (magic fixes) and repetitive language patterns common in low-quality LLM outputs.
+
+#### 3.2. Algorithmic Grid Generation (Bin Packing)
+Unlike standard crossword generators that rely on a single large grid, this system generates **Disjoint Cores** to maximize density, similar to the reference imagery.
+
+*   **Phase 1: Greedy Clustering**: 
+    *   Iteratively builds intersecting subgraphs ("cores") of words.
+    *   Any word that cannot intersect an existing core starts a new cluster.
+    *   Filters out clusters with fewer than 3 words to prevent "orphan" words.
+
+*   **Phase 2: Best-Fit Bin Packing with Rotation**:
+    *   Treats each cluster as a 2D shape (Polyomino).
+    *   Uses a **Spiral Search** to place these shapes onto a master grid.
+    *   **Rotation Logic**: Tests both the original orientation and a 90-degree transposed version of each cluster.
+    *   **Optimization Function**: Selects the position and orientation that minimizes the total bounding box area (Best Fit), ensuring a compact layout with minimal empty space.
+
+#### 3.3. Telugu Linguistic Handling (Akshara Splitting)
+Crosswords in Indian scripts (Abugidas) operate on **syllables (Aksharas)**, not characters. A standard `string[i]` split would break a letter like `కా` (Ka + aa) into `క` and `ా`.
+
+*   **Solution**: Implemented a custom tokenizer in `utils.py`.
+*   **Logic**: Parses the Unicode stream to group Base Consonants + Vowel Signs + Modifiers into single logical units.
+*   **Result**: Valid puzzle cells where one box = one full readable Akshara.
