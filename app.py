@@ -328,6 +328,12 @@ elif app_mode == "Settings":
              st.success("⚡ Groq / Fast Inference Enabled")
         
         st.markdown("---")
+
+        st.subheader("Embedding Model")
+        st.info(f"Current Model: **{config.STORY_EMBEDDING_MODEL_NAME}**")
+        st.caption("Used for RAG context retrieval.")
+
+        st.markdown("---")
         
     with col_s2:
         st.subheader("Generation Parameters")
