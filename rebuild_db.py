@@ -1,6 +1,9 @@
-
 import os
 import sys
+from dotenv import load_dotenv
+
+# Load env vars from .env immediately
+load_dotenv()
 
 # Add src to path just in case
 sys.path.append(os.path.join(os.getcwd(), 'src'))
