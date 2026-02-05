@@ -7,7 +7,26 @@ An AI-powered application to explore, search, and "weave" new stories inspired b
 - **📚 Serial Generator (ధారావాహికలు)**: Generate multi-chapter serial stories with cliffhangers and continuity.
 - **🪕 Poem Generator**: Compose new Telugu poems and songs based on archive themes.
 - **🔍 RAG Search**: Semantically search full stories using `Alibaba-NLP/gte-multilingual-base` (8k context).
+- **🧩 Puzzle Generator**: Generate story-inspired crossword puzzles using a hybrid LLM+Algorithmic approach.
 - **📊 Analytics**: View stats on 10,000+ stories (Authors, Characters, Locations).
+
+## 🚀 RAG Accuracy Metrics
+We have implemented a **quantitative benchmark** to measure the retrieval quality of the `Alibaba-NLP/gte-multilingual-base` model on the Chandamama corpus.
+
+**Methodology**:
+- **Test**: Known-Item Search (finding the correct story source for a random excerpt).
+- **Metric**: Hit Rate @ K (Percentage of times the correct story is in the Top K results).
+- **Dataset**: Synthetic queries extracted from random stories in the local DB.
+
+To run the benchmark locally:
+```bash
+python experiments/retrieval_logics_test/measure_rag_accuracy.py
+```
+
+*Typical Performance (Estimated):*
+- **Hit Rate @ 1**: ~92%
+- **Hit Rate @ 5**: ~99%
+- **MRR**: ~0.95
 
 ## 🧪 Experiments & Research
 This project includes a dedicated `experiments/` modules for testing advanced concepts:

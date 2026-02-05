@@ -12,6 +12,14 @@ from src.story_gen import generate_story, generate_poem
 from src.retrieval.vector_search import StoryEmbeddingsRetriever
 from src import config
 
+# --- PUZZLE IMPORTS ---
+from src.local_llm_multi import generate_response_multi
+from src.story_inspired_puzzles.puzzle_generator import CrosswordGenerator
+from src.story_inspired_puzzles.prompts import PROMPT_SERIAL_INSPIRED_STORY, PROMPT_CROSSWORD_EXTRACTION
+import pandas as pd
+import re
+# ----------------------
+
 # Page Config
 st.set_page_config(
     page_title="Classic Telugu Studio",
@@ -58,7 +66,8 @@ with st.sidebar:
     st.title("🌙 Classic Telugu Studio")
     # Sidebar - Mode Selection
     st.sidebar.title("Telugu Studio")
-    app_mode = st.sidebar.radio("Choose Mode", ["Story Generator", "Serial Generator", "Poem Generator", "Settings"])
+    # Added "Puzzle Generator" to the options
+    app_mode = st.sidebar.radio("Choose Mode", ["Story Generator", "Serial Generator", "Poem Generator", "Puzzle Generator", "Settings"])
     
     # Global Sidebar Stats (Optional)
     st.sidebar.markdown("---")
@@ -78,8 +87,6 @@ with st.sidebar:
              "temperature": 0.75
         }
     
-
-        
     # Validation: Logic to auto-fix stale session state (e.g. user had gpt-4o-mini selected)
     if st.session_state["llm_settings"]["model"] not in config.AVAILABLE_MODELS:
         # Silently switch to default
@@ -298,6 +305,267 @@ elif app_mode == "Poem Generator":
                 st.markdown(st.session_state["gen_poem"])
             else:
                 st.info("Poem output will appear here.")
+
+# --- PUZZLE GENERATOR ---
+elif app_mode == "Puzzle Generator":
+    st.title("🧩 Story-Inspired Puzzle Generator")
+    st.caption("Generate a high-quality story and convert it into a crossword puzzle.")
+
+    # --- PUZZLE SESSION STATE ---
+    if 'puzzle_story_text' not in st.session_state:
+        st.session_state.puzzle_story_text = ""
+    if 'puzzle_layout' not in st.session_state:
+        st.session_state.puzzle_layout = None
+    if 'puzzle_data' not in st.session_state:
+        st.session_state.puzzle_data = None
+    
+    # ----------------------------
+
+    col1, col2 = st.columns([1, 1], gap="large")
+
+    with col1:
+        st.subheader("1. Design Story")
+        
+        # Faceted Inputs (Matching Main App)
+        prompt_input = st.text_area("Plot Idea", height=100, placeholder="e.g. A king who lost his crown in a magical lake...", key="puz_prompt")
+        
+        genres = ["Folklore", "Fantasy", "Moral", "Animal Fable", "Mythology", "Humor", "History", "Adventure"]
+        sel_genre = st.selectbox("Genre", genres, index=0, key="puz_genre")
+        
+        all_keywords = get_keys(global_stats, "top_keywords")
+        sel_keywords = st.multiselect("Keywords", all_keywords[:100], placeholder="Select keywords...", key="puz_kw")
+        keywords_str = ", ".join(sel_keywords) if sel_keywords else "None"
+        
+        all_chars = get_keys(global_stats, "top_characters")
+        sel_chars = st.multiselect("Characters", all_chars[:100], placeholder="Select characters...", key="puz_ch")
+        
+        all_locs = get_keys(global_stats, "top_locations")
+        sel_locs = st.multiselect("Locations", all_locs[:100], placeholder="Select locations...", key="puz_loc")
+        
+        st.markdown("<br>", unsafe_allow_html=True)
+
+        if st.button("✨ Generate Story", type="primary", use_container_width=True, key="puz_gen_btn"):
+            with st.spinner("Writing a classic Telugu story..."):
+                try:
+                    # Prepare Prompt
+                    # We append facets to user input for the prompt logic
+                    full_input = f"{prompt_input} Characters: {', '.join(sel_chars)}. Locations: {', '.join(sel_locs)}."
+                    
+                    prompt = PROMPT_SERIAL_INSPIRED_STORY.format(
+                        genre=sel_genre,
+                        keywords=keywords_str,
+                        input=full_input
+                    )
+                    
+                    # Stream Response
+                    stream = generate_response_multi(
+                        model_id=st.session_state["llm_settings"]["model"], # Use Global Settings
+                        prompt=prompt,
+                        system_prompt="You are a Telugu storyteller.",
+                        max_tokens=2500,
+                        temperature=0.7,
+                        stream=True
+                    )
+                    
+                    with col2:
+                         st.subheader("📖 Generated Story")
+                         response_text = st.write_stream(stream)
+                    
+                    st.session_state.puzzle_story_text = response_text
+                    # Clear old puzzle
+                    st.session_state.puzzle_layout = None
+                    st.session_state.puzzle_data = None
+                    st.rerun()
+                    
+                except Exception as e:
+                    st.error(f"Error: {e}")
+
+    # If already generated, show story
+    if st.session_state.puzzle_story_text and not st.session_state.get('puz_gen_btn'): # Pseudo check
+         with col2:
+             st.subheader("📖 Generated Story")
+             st.markdown(st.session_state.puzzle_story_text)
+
+
+    # --- STEP 2: CROSSWORD GENERATION ---
+    if st.session_state.puzzle_story_text:
+        st.divider()
+        st.header("2. Generate Crossword")
+        
+        if st.button("🧩 Create Crossword from Story", type="primary", key="puz_create_btn"):
+            with st.spinner("Analyzing story and building grid..."):
+                try:
+                    # 1. Extract Words & Clues via LLM
+                    extract_prompt = PROMPT_CROSSWORD_EXTRACTION.format(
+                        story_text=st.session_state.puzzle_story_text
+                    )
+                    
+                    stream = generate_response_multi(
+                        model_id=st.session_state["llm_settings"]["model"],
+                        prompt=extract_prompt,
+                        system_prompt="You are a puzzle generator. Output JSON only.",
+                        max_tokens=4000,
+                        temperature=0.2, 
+                        stream=True
+                    )
+                    
+                    llm_output = ""
+                    for chunk in stream:
+                        llm_output += chunk
+                    
+                    # Parse JSON
+                    cleaned_output = llm_output.strip()
+                    if not cleaned_output:
+                         st.error("The AI returned an empty response.")
+                         st.stop()
+                         
+                    if "```json" in cleaned_output:
+                        cleaned_output = cleaned_output.split("```json")[1].split("```")[0]
+                    elif "```" in cleaned_output:
+                         cleaned_output = cleaned_output.split("```")[1].split("```")[0]
+                    
+                    cleaned_output = cleaned_output.strip()
+                    # Basic JSON fix
+                    if not cleaned_output.endswith("]"):
+                         last_bracket = cleaned_output.rfind("]")
+                         if last_bracket != -1:
+                             cleaned_output = cleaned_output[:last_bracket+1]
+                    
+                    try:
+                        words_data = json.loads(cleaned_output)
+                    except json.JSONDecodeError:
+                        # Fallback Regex
+                        pattern = r'"answer"\s*:\s*"([^"]+)"\s*,\s*"clue"\s*:\s*"([^"]+)"'
+                        matches = re.findall(pattern, cleaned_output)
+                        
+                        if matches:
+                            words_data = [{"answer": m[0], "clue": m[1]} for m in matches]
+                            st.warning(f"Recovered {len(words_data)} words via regex.")
+                        else:
+                            st.error("Invalid puzzle format from AI.")
+                            st.stop()
+                    
+                    # 2. Generate Layout via Python Algorithm
+                    generator = CrosswordGenerator() 
+                    # 2-Phase Clustering Approach is built into CrosswordGenerator now? 
+                    # Note: Existing implementation uses `generate_layout`. 
+                    # If we improved it in the playground, we rely on `CrosswordGenerator` class having those improvements.
+                    # We updated `puzzle_generator.py` earlier so it should be good.
+                    
+                    layout = generator.generate_layout(words_data, attempts=100)
+                    
+                    if layout:
+                        st.session_state.puzzle_layout = layout
+                        st.session_state.puzzle_data = words_data
+                        st.rerun()
+                    else:
+                        st.error("Could not generate a valid grid. Try again.")
+                        
+                except Exception as e:
+                    st.error(f"Error generating puzzle: {e}")
+
+        # --- DISPLAY PUZZLE ---
+        if st.session_state.puzzle_layout:
+            layout = st.session_state.puzzle_layout
+            
+            st.subheader("Crossword Grid")
+            
+            grid_w = layout['width']
+            grid_h = layout['height']
+            
+            st.markdown(f"""
+            <style>
+                .cw-grid {{
+                    display: grid;
+                    grid-template-columns: repeat({grid_w}, 34px);
+                    gap: 0px; 
+                    margin-top: 20px;
+                    margin-bottom: 20px;
+                }}
+                .cw-cell {{
+                    width: 34px;
+                    height: 34px;
+                    background-color: transparent; 
+                    display: flex;
+                    align-items: center;
+                    justify_content: center;
+                    position: relative;
+                }}
+                .cw-cell-filled {{
+                    background-color: #ffffff;
+                    color: #000000;
+                    border: 1px solid #000;
+                    font-weight: bold;
+                    font-size: 16px; 
+                }}
+                .cw-num {{
+                    position: absolute;
+                    top: 1px;
+                    left: 2px;
+                    font-size: 9px;
+                    color: #555;
+                }}
+            </style>
+            """, unsafe_allow_html=True)
+            
+            # Render Grid
+            grid_html = '<div class="cw-grid">'
+            cell_map = {}
+            for w in layout['words']:
+                start_x = w['start_x']
+                start_y = w['start_y']
+                direction = w['direction']
+                answer = w['answer'] 
+                number = w['number']
+                
+                # Number the start
+                if (start_x, start_y) not in cell_map:
+                    cell_map[(start_x, start_y)] = {'char': answer[0], 'num': number}
+                else:
+                     cell_map[(start_x, start_y)]['num'] = number
+                
+                for i, char in enumerate(answer):
+                    cx = start_x + i if direction == 'across' else start_x
+                    cy = start_y if direction == 'across' else start_y + i
+                    if (cx, cy) not in cell_map:
+                        cell_map[(cx, cy)] = {'char': char, 'num': None}
+            
+            for y in range(grid_h):
+                for x in range(grid_w):
+                    cell_data = cell_map.get((x, y))
+                    if cell_data:
+                        num_html = f'<span class="cw-num">{cell_data["num"]}</span>' if cell_data['num'] else ''
+                        grid_html += f'<div class="cw-cell cw-cell-filled">{num_html}{cell_data["char"]}</div>'
+                    else:
+                        grid_html += '<div class="cw-cell" style="opacity:0.2; font-size: 12px;">⭐</div>'
+            
+            grid_html += '</div>'
+            st.markdown(grid_html, unsafe_allow_html=True)
+            
+            # Clues & Answers
+            st.subheader("Clues")
+            c1, c2 = st.columns(2)
+            
+            across_clues = sorted([w for w in layout['words'] if w['direction'] == 'across'], key=lambda x: x['number'])
+            down_clues = sorted([w for w in layout['words'] if w['direction'] == 'down'], key=lambda x: x['number'])
+            
+            with c1:
+                st.markdown("**Across**")
+                for w in across_clues:
+                    st.markdown(f"**{w['number']}.** {w['clue']} ({len(w['answer'])})")
+            with c2:
+                st.markdown("**Down**")
+                for w in down_clues:
+                    st.markdown(f"**{w['number']}.** {w['clue']} ({len(w['answer'])})")
+
+            st.markdown("---")
+            with st.expander("👁️ Show Answers / Review Key"):
+                all_words = sorted(layout['words'], key=lambda x: x['number'])
+                data = [{"Number": w['number'], "Direction": w['direction'].title(), "Clue": w['clue'], "Answer": "".join(w['answer'])} for w in all_words]
+                st.table(pd.DataFrame(data))
+
+
+
 
 # --- SETTINGS ---
 elif app_mode == "Settings":

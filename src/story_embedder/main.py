@@ -24,6 +24,7 @@ def main(dry_run=False):
     total_processed = 0
     total_skipped_existing = 0
     total_embedded = 0
+    total_updated = 0
     total_failed = 0
     
     # Initialize skipped log
@@ -50,11 +51,23 @@ def main(dry_run=False):
                 story_ids = [s.story_id for s in stories]
                 existing_ids = storage.check_existing(story_ids)
                 
-                stories_to_embed = [s for s in stories if s.story_id not in existing_ids]
+                stories_to_embed = []
+                stories_to_update = []
                 
-                skipped_count = len(stories) - len(stories_to_embed)
-                total_skipped_existing += skipped_count
+                for s in stories:
+                    if s.story_id in existing_ids:
+                        stories_to_update.append(s)
+                    else:
+                        stories_to_embed.append(s)
                 
+                # Handling Existing: Instead of skipping, we UPDATE their payload to ensure 'text' is present
+                if stories_to_update:
+                    # Uses efficient batch update (no re-embedding)
+                    # print(f"Updating payloads for {len(stories_to_update)} existing stories...")
+                    count_upd = storage.update_payloads(stories_to_update)
+                    total_updated += count_upd
+                    
+                # Handling New: Embed as usual
                 if not stories_to_embed:
                     continue
             else:
@@ -69,7 +82,7 @@ def main(dry_run=False):
                         print(f"Text length: {len(s.text)} chars")
                         samples_printed += 1
             
-            # 5. Embed and Store
+            # 5. Embed and Store (Only for NEW items)
             if not dry_run and stories_to_embed:
                 # Embedder handles token limit checks internally
                 embeddings_data = embedder.generate_embeddings(stories_to_embed)
@@ -89,7 +102,7 @@ def main(dry_run=False):
     print(f"Duration: {duration:.2f} seconds")
     print(f"Total Stories Scanned: {total_processed}")
     if not dry_run:
-        print(f"Skipped (Already Exists): {total_skipped_existing}")
+        print(f"Updated (Payload Only): {total_updated}")
         print(f"Successfully Embedded: {total_embedded}")
         print(f"Failed Files: {total_failed}")
         print(f"Check {config.SKIPPED_STORIES_LOG} for skipped items (token limit).")

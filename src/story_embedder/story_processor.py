@@ -66,6 +66,9 @@ def process_file_to_stories(file_path: str, raw_chunks: List[Dict[str, Any]]) ->
         for k in keys_to_remove:
             metadata.pop(k, None)
             
+        # [FIX] Ensure FULL text is stored in metadata for RAG retrieval
+        metadata['text'] = full_text
+            
         # Add basic stats to metadata? The prompt says "Store metadata separately".
         # It doesn't ask to ADD new metadata, but preserving existing.
         # We will strictly preserve.

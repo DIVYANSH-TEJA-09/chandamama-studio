@@ -103,3 +103,37 @@ class QdrantStorage:
         except Exception as e:
             print(f"Error upserting batch: {e}")
             return 0
+            
+    def update_payloads(self, stories: List[Any]) -> int:
+        """
+        Updates metadata (payload) for existing stories WITHOUT re-embedding.
+        Uses Batch Operations for speed.
+        """
+        if not stories:
+            return 0
+            
+        # Prepare batch operations
+        ops = []
+        
+        for story in stories:
+            point_id = str(uuid.uuid5(uuid.NAMESPACE_DNS, story.story_id))
+            ops.append(
+                models.SetPayloadOperation(
+                    set_payload=models.SetPayload(
+                        payload=story.metadata,
+                        points=[point_id] 
+                    )
+                )
+            )
+            
+        try:
+            # Qdrant batch update requires 'body' to be list of operations
+            # client.batch_update_points(collection_name, update_operations)
+            self.client.batch_update_points(
+                collection_name=config.COLLECTION_NAME,
+                update_operations=ops
+            )
+            return len(stories)
+        except Exception as e:
+            print(f"Error updating payloads: {e}")
+            return 0
