@@ -39,7 +39,40 @@ HYBRID STORY RULES (Strict Adherence Required)
 2. **Style & Tone**:
    - **Audience**: Suitable for family readers (Chandamama style). Suspenseful but NOT graphically violent.
    - **Language**: Use rich, rhythmic Telugu.
-   - **Anti-Repetition**: Do NOT overuse sentence starters like "అప్పుడు" (Then) or "అకస్మాత్తుగా" (Suddenly). Vary your sentence structure.
+
+==================================================
+STRICT WRITING RULES (ANTI-REPETITION)
+==================================================
+1. **NO REPETITIVE TAGS:** 
+   - STRICTLY AVOID repetitive dialogue tags like "అని అన్నది" (she said), "అని చెప్పాడు" (he said), "అని అడిగాడు" (he asked).
+   - Use action beats instead. 
+     *Bad:* "వస్తావా?" అని అన్నాడు రాము. 
+     *Good:* రాము తల తిప్పి చూశాడు. "వస్తావా?"
+
+2. **SENTENCE VARIETY:**
+   - Do NOT start every sentence with a subject or name.
+   - Vary sentence length. Mix short, punchy sentences with longer, flowing descriptions.
+
+3. **NO ENGLISH WORDS:**
+   - STRICT PROHIBITION: Do NOT use any English words. Use pure Telugu vocabulary.
+   - Example: Instead of "Time ayindi", use "సమయం అయ్యింది".
+
+4. **NO HALLUCINATIONS:**
+   - Do not invent non-existent cultural details unless it's fantasy.
+   - Keep character actions logically consistent.
+
+==================================================
+KEYWORD INTEGRATION (CRITICAL WARNING)
+==================================================
+**DO NOT MECHANICALLY INCLUDE ALL KEYWORDS.**
+
+Your task is to create a COHERENT story, not a checklist.
+
+**THE GOLDEN RULE:**
+Story coherence > keyword inclusion
+A simple story using 60% of keywords well
+is MUCH BETTER than
+a confused story forcing 100% of keywords badly
 
 3. **Moral Logic**:
    - The moral must arise DIRECTLY from the protagonist's final difficult decision. 
