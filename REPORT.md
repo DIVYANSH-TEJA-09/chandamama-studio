@@ -335,4 +335,18 @@ Crosswords in Indian scripts (Abugidas) operate on **syllables (Aksharas)**, not
 
 *   **Solution**: Implemented a custom tokenizer in `utils.py`.
 *   **Logic**: Parses the Unicode stream to group Base Consonants + Vowel Signs + Modifiers into single logical units.
-*   **Result**: Valid puzzle cells where one box = one full readable Akshara.
+
+### Phase 13: RAG Accuracy Benchmarks & Repair
+- **Problem:** Users reported inconsistent RAG performance. Qualitative checks were insufficient.
+- **Solution:**
+    - **Benchmark Script:** Created `experiments/retrieval_logics_test/measure_rag_accuracy.py` to run "Known-Item Search" tests (Hit Rate @ 5, MRR).
+    - **Discovery:** Benchmark revealed 0% Hit Rate. Root cause analysis identified that the Qdrant Cloud database contained metadata but **missing text payloads**.
+    - **Fix:** Patched `story_processor.py` to explicitly include `text` in the metadata payload, ensuring the RAG context window is correctly populated.
+
+### Phase 14: Parallel Rebuild Pipeline (Optimization)
+- **Objective:** The database rebuild process (embedding 10k stories) was taking ~24+ hours on local hardware.
+- **Optimization:**
+    - **Parallel Architecture:** Refactored the ingestion pipeline (`src/story_embedder/main.py`) to use `multiprocessing`.
+    - **Dynamic Scaling:** The system now automatically detects available CPU cores and utilizes **75% of capacity** (e.g., 12 workers on a 16-core machine).
+    - **Lazy Loading:** Each worker independently initializes its Qdrant connection and Embedding Model, preventing memory locks and maximizing throughput.
+    - **Repair Mode:** Implemented a "Fast Update" logic that checks for existing IDs and only updates the payload (text) without re-running distinct vector embeddings, reducing repair time by ~95%.

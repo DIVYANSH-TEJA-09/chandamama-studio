@@ -2508,3 +2508,5 @@ timestamp,story_id,token_count,reason
 2026-01-04T01:47:44.329840,2003_07_07,8462,Exceeds token limit
 2026-01-04T18:30:16.608259,2003_07_07,8462,Exceeds token limit
 2026-01-04T21:02:28.054811,1977_05_04,15975,Exceeds token limit
+2026-02-07T02:17:57.884976,1977_05_04,16023,Exceeds token limit
+2026-02-07T04:40:23.525771,2003_07_07,8504,Exceeds token limit

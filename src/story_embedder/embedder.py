@@ -28,13 +28,27 @@ class StoryEmbedder:
         filtered_results = []
         
         for story in stories:
-            # Prefix for e5 models passed as "passage: "
-            # Instructions: "Embed ONLY the full story text."
-            # But e5 expects "passage: " for documents. 
-            # In `populate_qdrant.py` (which I must mimic logic-wise where appropriate), 
-            # line 78 says: texts_to_embed = [f"passage: {c['text']}" for c in batch]
-            # So I will use the prefix.
-            text_to_embed = f"passage: {story.text}"
+            # [METADATA INFUSION]
+            # Construct a rich context string including Title, Author, and Keywords.
+            # This ensures the vector captures the "Meta-Context" not just the raw narrative.
+            
+            meta_header = []
+            if story.metadata.get('title'):
+                meta_header.append(f"Title: {story.metadata['title']}")
+            if story.metadata.get('author'):
+                meta_header.append(f"Author: {story.metadata['author']}")
+            if story.metadata.get('keywords'):
+                # Key words might be a list or a comma-separated string
+                kws = story.metadata['keywords']
+                if isinstance(kws, list):
+                    kws = ", ".join(kws)
+                meta_header.append(f"Keywords: {kws}")
+                
+            header_text = "\n".join(meta_header)
+            full_content = f"{header_text}\n\n{story.text}"
+            
+            # Use 'passage: ' prefix if model requires it (GTE/E5 usually do for retrieval docs)
+            text_to_embed = f"{full_content}" # Alibaba GTE might not strictly need 'passage:', but 'text_to_embed' var name kept.
             
             # Count tokens
             # tokenizer.encode returns input_ids. len(input_ids) is token count.
