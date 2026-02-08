@@ -2,6 +2,8 @@
 
 An AI-powered application to explore, search, and "weave" new stories inspired by Classic Telugu Literature.
 
+## Working link: https://telugu-story-generator.streamlit.app 
+
 ## Features
 - **📖 Story Generator**: Generate *new* stories in strict classic style, grounded in actual archive content (RAG).
 - **📚 Serial Generator (ధారావాహికలు)**: Generate multi-chapter serial stories with cliffhangers and continuity.
